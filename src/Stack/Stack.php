@@ -1,6 +1,7 @@
 <?php
 
 namespace DataStructures\Stack;
+
 use Traversable;
 use IteratorAggregate;
 
@@ -10,12 +11,12 @@ use IteratorAggregate;
  */
 class Stack implements IteratorAggregate, \Countable
 {
-    private int $length = 0;
+    protected int $length = 0;
 
     /**
      * @var null|Node<TValue>
      */
-    private ?Node $firstNode = null;
+    protected ?Node $firstNode = null;
 
     /**
      * @param TValue $value
@@ -33,7 +34,7 @@ class Stack implements IteratorAggregate, \Countable
      */
     public function pop(): mixed
     {
-        $toRemove  = $this->firstNode ?? throw new IsEmptyException();
+        $toRemove = $this->firstNode ?? throw new IsEmptyException();
         $this->firstNode = $toRemove->next;
         return $toRemove->value;
     }
@@ -46,7 +47,8 @@ class Stack implements IteratorAggregate, \Countable
     /**
      * @return StackIterator<TValue>
      */
-	function getIterator(): Traversable {
+    function getIterator(): Traversable
+    {
         return new StackIterator($this->firstNode);
-	}
+    }
 }

@@ -14,7 +14,7 @@ class Node
     /**
      * @param TValue $value
      */
-    public function __construct(public readonly mixed $value)
+    public function __construct(public mixed $value)
     {
     }
 }
