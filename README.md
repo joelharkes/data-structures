@@ -1,5 +1,5 @@
 # data-structures
-Data structures for PHP
+Data structures for PHP written in PHP.
 
 
 * [Stack](./src/Stack)
