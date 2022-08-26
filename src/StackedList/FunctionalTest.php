@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DataStructures\StackedList;
 
 use PHPUnit\Framework\TestCase;
+use Traversable;
 
 class FunctionalTest extends TestCase
 {
@@ -58,7 +59,13 @@ class FunctionalTest extends TestCase
         $this->assertValues($list, [3, 1]);
     }
 
-    private static function assertValues(\Traversable $list, array $expectedValues)
+    /**
+     * @template TValue
+     * @param Traversable<int, TValue> $list
+     * @param array<int, TValue> $expectedValues
+     * @return void
+     */
+    private static function assertValues(Traversable $list, array $expectedValues): void
     {
         foreach ($list as $key => $value) {
             self::assertSame($value, $expectedValues[$key]);

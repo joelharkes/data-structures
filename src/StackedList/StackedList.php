@@ -40,6 +40,7 @@ class StackedList extends Stack implements ArrayAccess
     {
         $this->assertValidOffset($offset);
         $node = $this->findNode($offset - 1);
+        // @phpstan-ignore-next-line as above we assert next node for sure exists.
         $node->next = $node->next->next;
         $this->length--;
     }
@@ -67,25 +68,32 @@ class StackedList extends Stack implements ArrayAccess
     public function removeLast(): mixed
     {
         $oneToLastNode = $this->findNode($this->count() - 2);
+        /** @var Node<TValue> $lastNode */
         $lastNode = $oneToLastNode->next;
         $oneToLastNode->next = null;
         $this->length--;
         return $lastNode->value;
     }
 
-    private function findNode(int $offset): Node
+    /**
+     * @param mixed $offset
+     * @return Node<TValue>
+     */
+    private function findNode(mixed $offset): Node
     {
         $this->assertValidOffset($offset);
         $current = 0;
         $node = $this->firstNode;
         while ($offset !== $current) {
+            // @phpstan-ignore-next-line as above we assert next node for sure exists.
             $node = $node->next;
             $current++;
         }
+        /** @var Node<TValue> $node */
         return $node;
     }
 
-    private function assertValidOffset($offset)
+    private function assertValidOffset(mixed $offset): void
     {
         if (!is_int($offset)) {
             throw new \InvalidArgumentException("offset can only be integer");

@@ -3,7 +3,7 @@
 Stack is a simple data structure where:
 
 * push() adds an item in the front.
-* pop() takes of the last element added and returns it.
+* pop() takes of the last item added and returns it.
 
 This stack is iterable, meaning you can call `foreach($stack as $element)` in PHP but, it will start iterating in
 reverse order:
