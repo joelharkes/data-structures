@@ -7,6 +7,7 @@ use Iterator;
 
 /**
  * @template TValue
+ * @implements Iterator<int, TValue>
  */
 class StackIterator implements Iterator
 {
@@ -27,6 +28,9 @@ class StackIterator implements Iterator
      */
     function current(): mixed
     {
+        if($this->node === null){
+            throw new \LogicException("cannot get current when current node is not ::valid()");
+        }
         return $this->node->value;
     }
 

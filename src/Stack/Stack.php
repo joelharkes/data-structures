@@ -6,6 +6,7 @@ use IteratorAggregate;
 
 /**
  * @template TValue
+ * @implements IteratorAggregate<int, TValue>
  */
 class Stack implements IteratorAggregate, \Countable
 {
