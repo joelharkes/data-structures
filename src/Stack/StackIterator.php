@@ -3,14 +3,19 @@ declare(strict_types=1);
 
 namespace DataStructures\Stack;
 
+use DataStructures\Iterator\IteratorExtensions;
 use Iterator;
 
 /**
  * @template TValue
  * @implements Iterator<int, TValue>
+ * @use IteratorExtensions<int, TValue>
  */
 class StackIterator implements Iterator
 {
+    /** @use IteratorExtensions<int, TValue> */
+    use IteratorExtensions;
+
     private int $index = 0;
     /** @var null|Node<TValue> */
     private ?Node $node;

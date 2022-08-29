@@ -19,6 +19,21 @@ class Stack implements IteratorAggregate, \Countable
     protected ?Node $firstNode = null;
 
     /**
+     * @template TItem
+     * @param Traversable<mixed, TItem> $param
+     * @return Stack<TItem>
+     */
+    public static function fromTraversable(Traversable $param): Stack
+    {
+        /** @var Stack<TItem> $stack */
+        $stack = new Stack();
+        foreach($param as $value){
+            $stack->push($value);
+        }
+        return $stack;
+    }
+
+    /**
      * @param TValue $value
      */
     public function push(mixed $value): void
@@ -47,7 +62,7 @@ class Stack implements IteratorAggregate, \Countable
     /**
      * @return StackIterator<TValue>
      */
-    function getIterator(): Traversable
+    function getIterator(): StackIterator
     {
         return new StackIterator($this->firstNode);
     }

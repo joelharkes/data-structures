@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace DataStructures\Set;
 use Countable;
+use DataStructures\Iterator\WrappedIterator;
 use IteratorAggregate;
 use Traversable;
 
 /**
- * @template TValue of int|float|string|object
+ * technically only supports: int|float|string|object as values
+ * @template TValue
  * @implements IteratorAggregate<int, TValue>
  */
 class Set implements Countable, IteratorAggregate
@@ -61,20 +63,39 @@ class Set implements Countable, IteratorAggregate
         if(is_float($value)){
             return (string) $value;
         }
+        if(!is_object($value)){
+            $type = gettype($value);
+            throw new \LogicException("value of $type not supported");
+        }
         return spl_object_id($value);
     }
 
     /**
-     * @return Traversable<int, TValue>
+     * @return WrappedIterator<int, TValue>
      */
-    public function getIterator(): Traversable
+    public function getIterator(): WrappedIterator
     {
         $array = array_values($this->hasTable);
-        return new \ArrayIterator($array);
+        return new WrappedIterator(new \ArrayIterator($array));
     }
 
     public function count(): int
     {
         return count($this->hasTable);
+    }
+
+    /**
+     * @template TItem
+     * @param Traversable<mixed, TItem> $traversable
+     * @return Set<TItem>
+     */
+    public static function fromTraversable(Traversable $traversable): Set
+    {
+        /** @var Set<TItem> $set */
+        $set = new Set();
+        foreach($traversable as $item){
+            $set->add($item);
+        }
+        return $set;
     }
 }
