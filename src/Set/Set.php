@@ -86,10 +86,10 @@ class Set implements Countable, IteratorAggregate
 
     /**
      * @template TItem
-     * @param Traversable<mixed, TItem> $traversable
+     * @param iterable<mixed, TItem> $traversable
      * @return Set<TItem>
      */
-    public static function fromTraversable(Traversable $traversable): Set
+    public static function fromTraversable(iterable $traversable): Set
     {
         /** @var Set<TItem> $set */
         $set = new Set();

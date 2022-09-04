@@ -20,10 +20,10 @@ class Stack implements IteratorAggregate, \Countable
 
     /**
      * @template TItem
-     * @param Traversable<mixed, TItem> $param
+     * @param iterable<mixed, TItem> $param
      * @return Stack<TItem>
      */
-    public static function fromTraversable(Traversable $param): Stack
+    public static function fromTraversable(iterable $param): Stack
     {
         /** @var Stack<TItem> $stack */
         $stack = new Stack();
