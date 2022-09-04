@@ -20,7 +20,7 @@ class MapIterator extends WrappedIterator
      */
     public function __construct(Iterator $iterator, private readonly Closure $mapFn)
     {
-        /** @phpstan-ignore-next-line even though its not the right type we fix it by overwriting current() */
+        /** @phpstan-ignore-next-line even though it's not the right type we fix it by overwriting current() */
         parent::__construct($iterator);
     }
 
