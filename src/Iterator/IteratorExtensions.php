@@ -40,7 +40,7 @@ trait IteratorExtensions
     /**
      * @template TMappedValue
      * @param Closure(TValue, TKey=): TMappedValue $mapFn
-     * @return MapIterator<TKey, TMappedValue, TValue>
+     * @return MapKeyIterator<TKey, TMappedValue, TValue>
      * @phpstan-ignore-next-line we know its covariant because we only call the function on this iterator it's content
      */
     public function mapKey(Closure $mapFn): WrappedIterator
@@ -70,9 +70,11 @@ trait IteratorExtensions
 
     /**
      * @return Map<TKey, TValue>
+     * @phpstan-ignore-next-line only string|int iterator keys allowed but no other way to define this.
      */
     public function toMap(): Map
     {
+        /** @phpstan-ignore-next-line only string|int iterator keys allowed but no other way to define this. */
         return Map::fromTraversable($this);
     }
 
@@ -81,13 +83,14 @@ trait IteratorExtensions
      */
     public function toArray(): array
     {
+        /** @phpstan-ignore-next-line only string|int iterator keys allowed but no other way to define this. */
         return iterator_to_array($this);
     }
 
     /**
      * @template TOutput
      * @param TOutput $initialValue
-     * @param Closure(TOutput, TValue, TKey=): TOutput
+     * @param Closure(TOutput, TValue, TKey=): TOutput $reduceFn
      * @return TOutput
      */
     public function reduce(mixed $initialValue, Closure $reduceFn): mixed
@@ -158,7 +161,7 @@ trait IteratorExtensions
      * @param callable(TValue, TKey=): bool $filterFn
      * @return TValue|null
      */
-    public function first(callable $filterFn): ?bool
+    public function first(callable $filterFn): mixed
     {
         foreach ($this as $key => $value) {
             if ($filterFn($value, $key)) {

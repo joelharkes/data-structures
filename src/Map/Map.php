@@ -15,7 +15,7 @@ use Traversable;
 /**
  * technically only supports: int|float|string|object as values
  * float is not advisable as it is forced to an int.
- * @template TKey as string|bool|null|int
+ * @template TKey as int|string
  * @template TValue
  * @implements IteratorAggregate<TKey, TValue>
  * @implements ArrayAccess<TKey, TValue>
@@ -38,7 +38,7 @@ class Map implements Countable, IteratorAggregate, ArrayAccess
         if (is_array($iterator)) {
             return new Map($iterator);
         }
-        /** @var Traversable $iterator no other options than being a traversable here. */
+        /** @var Traversable<TKey, TValue> $iterator no other options than being a traversable here. */
         return new Map(iterator_to_array($iterator));
     }
 

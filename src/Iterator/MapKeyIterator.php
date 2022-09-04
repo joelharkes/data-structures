@@ -30,8 +30,8 @@ class MapKeyIterator extends WrappedIterator
     public function key(): mixed
     {
         $mapFn = $this->mapFn;
-        /** @var TMapFrom $value */
-        $value = parent::key();
-        return $mapFn($value, parent::key());
+        /** @var TMapFrom $key */
+        $key = parent::key();
+        return $mapFn(parent::current(), $key);
     }
 }
