@@ -6,6 +6,8 @@ namespace DataStructures\StackedList;
 use ArrayAccess;
 use DataStructures\Stack\Node;
 use DataStructures\Stack\Stack;
+use InvalidArgumentException;
+use OutOfBoundsException;
 
 /**
  * @template TValue
@@ -18,7 +20,7 @@ class StackedList extends Stack implements ArrayAccess
     public function offsetExists(mixed $offset): bool
     {
         if (!is_int($offset)) {
-            throw new \InvalidArgumentException("offset can only be integer");
+            throw new InvalidArgumentException("offset can only be integer");
         }
         return $offset <= $this->count();
     }
@@ -96,10 +98,10 @@ class StackedList extends Stack implements ArrayAccess
     private function assertValidOffset(mixed $offset): void
     {
         if (!is_int($offset)) {
-            throw new \InvalidArgumentException("offset can only be integer");
+            throw new InvalidArgumentException("offset can only be integer");
         }
         if ($offset < 0 || $offset >= $this->count()) {
-            throw new \OutOfBoundsException("cannot get index $offset of Stack with {$this->count()} nodes");
+            throw new OutOfBoundsException("cannot get index $offset of Stack with {$this->count()} nodes");
         }
     }
 }

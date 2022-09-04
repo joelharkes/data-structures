@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DataStructures\Map;
 
 use ArrayAccess;
+use ArrayIterator;
 use Countable;
 use DataStructures\Iterator\WrappedIterator;
 use IteratorAggregate;
@@ -47,7 +48,7 @@ class Map implements Countable, IteratorAggregate, ArrayAccess
      */
     public function getIterator(): WrappedIterator
     {
-        return new WrappedIterator(new \ArrayIterator($this->array));
+        return new WrappedIterator(new ArrayIterator($this->array));
     }
 
     /**

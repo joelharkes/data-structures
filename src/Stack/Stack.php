@@ -2,6 +2,7 @@
 
 namespace DataStructures\Stack;
 
+use Countable;
 use Traversable;
 use IteratorAggregate;
 
@@ -9,7 +10,7 @@ use IteratorAggregate;
  * @template TValue
  * @implements IteratorAggregate<int, TValue>
  */
-class Stack implements IteratorAggregate, \Countable
+class Stack implements IteratorAggregate, Countable
 {
     protected int $length = 0;
 

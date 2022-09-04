@@ -5,6 +5,7 @@ namespace DataStructures\Stack;
 
 use DataStructures\Iterator\IteratorExtensions;
 use Iterator;
+use LogicException;
 
 /**
  * @template TValue
@@ -34,7 +35,7 @@ class StackIterator implements Iterator
     function current(): mixed
     {
         if ($this->node === null) {
-            throw new \LogicException("cannot get current when current node is not ::valid()");
+            throw new LogicException("cannot get current when current node is not ::valid()");
         }
         return $this->node->value;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DataStructures\Iterator;
 
 use Closure;
+use Iterator;
 
 /**
  * @template TKey
@@ -13,7 +14,7 @@ use Closure;
 class FilterIterator extends WrappedIterator
 {
 
-    public function __construct(\Iterator $iterator, private readonly Closure $filterFn)
+    public function __construct(Iterator $iterator, private readonly Closure $filterFn)
     {
         parent::__construct($iterator);
     }

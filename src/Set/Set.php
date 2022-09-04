@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 namespace DataStructures\Set;
+use ArrayIterator;
 use Countable;
 use DataStructures\Iterator\WrappedIterator;
 use IteratorAggregate;
-use Traversable;
+use LogicException;
 
 /**
  * technically only supports: int|float|string|object as values
@@ -65,7 +66,7 @@ class Set implements Countable, IteratorAggregate
         }
         if(!is_object($value)){
             $type = gettype($value);
-            throw new \LogicException("value of $type not supported");
+            throw new LogicException("value of $type not supported");
         }
         return spl_object_id($value);
     }
@@ -76,7 +77,7 @@ class Set implements Countable, IteratorAggregate
     public function getIterator(): WrappedIterator
     {
         $array = array_values($this->hasTable);
-        return new WrappedIterator(new \ArrayIterator($array));
+        return new WrappedIterator(new ArrayIterator($array));
     }
 
     public function count(): int
