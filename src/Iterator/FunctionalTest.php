@@ -58,9 +58,28 @@ class FunctionalTest extends TestCase
         $iterator = new WrappedIterator(new ArrayIterator([1, 2, 3]));
         $result = $iterator->map(fn($key) => $key * 2);
         self::assertValues([2, 4, 6], $result);
-        self::assertValues([2, 4, 6], $result);
     }
 
+    public function test_skip_iterator(): void
+    {
+        $iterator = new WrappedIterator(new ArrayIterator([1, 2, 3]));
+        $result = $iterator->skip(2);
+        self::assertValues([ 2 => 3], $result);
+    }
+
+    public function test_take_iterator(): void
+    {
+        $iterator = new WrappedIterator(new ArrayIterator([1, 2, 3]));
+        $result = $iterator->take(2);
+        self::assertValues([1,2], $result);
+    }
+
+    public function test_flatten_iterator(): void
+    {
+        $iterator = new WrappedIterator(new ArrayIterator([[1, 2], [3], 4]));
+        $result = $iterator->flatten();
+        self::assertValues([1,2,3,4], $result);
+    }
     /**
      * @template TValue
      * @param Traversable<int, TValue> $list

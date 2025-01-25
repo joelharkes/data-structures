@@ -170,4 +170,23 @@ trait IteratorExtensions
         }
         return null;
     }
+
+    /**
+     * @param int $count amount if items skipped.
+     * @return SkipIterator<TKey, TValue> Keys are preserved.
+     */
+    public function skip(int $count): SkipIterator
+    {
+        return new SkipIterator($this, $count);
+    }
+
+    public function take(int $count): static
+    {
+        return new TakeIterator($this, $count);
+    }
+
+    public function flatten($keepKeys = false): FlattenIterator
+    {
+        return new FlattenIterator($this, $keepKeys);
+    }
 }
