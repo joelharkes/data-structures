@@ -57,6 +57,8 @@ class FunctionalTest extends TestCase
         $list->push(3);
         unset($list[1]);
         $this->assertValues($list, [3, 1]);
+        unset($list[0]);
+        $this->assertValues($list, [1]);
     }
 
     /**
@@ -67,8 +69,11 @@ class FunctionalTest extends TestCase
      */
     private static function assertValues(Traversable $list, array $expectedValues): void
     {
+        $count = 0;
         foreach ($list as $key => $value) {
+            $count++;
             self::assertSame($value, $expectedValues[$key]);
         }
+        self::assertSame(count($expectedValues), $count);
     }
 }
