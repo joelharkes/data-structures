@@ -1,6 +1,8 @@
 # data-structures
 Data structures for PHP written in PHP.
 
+Goal is to provide useful chainable methods for standard data structures, 
+with a balance between as much type safety as possible and ease of use.
 
 * [Stack](./src/Stack)
 * [StackedList](./src/StackedList)

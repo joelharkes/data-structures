@@ -1,76 +1,53 @@
-<?php
-
-declare(strict_types=1);
-
-namespace DataStructures\Stack;
-
-use PHPUnit\Framework\TestCase;
-
-final class FunctionalTest extends TestCase
-{
-    public function test_can_add_to_stack(): void
-    {
-        /** @var Stack<int> $stack */
-        $stack = new Stack();
-        $stack->push(1);
-        self::assertEquals(1, $stack->count());
+<?php declare(strict_types=1);
+use \DataStructures\Stack\IsEmptyException;
+use \DataStructures\Stack\Stack;
+test('can add to stack', function () {
+    /** @var Stack<int> $stack */
+    $stack = new Stack();
+    $stack->push(1);
+    expect($stack->count())->toBe(1);;
+});
+test('counts stacks size', function () {
+    /** @var Stack<int> $stack */
+    $stack = new Stack();
+    expect($stack->count())->toBe(0);;
+    $stack->push(1);
+    expect($stack->count())->toBe(1);;
+});
+test('can pop returns last value', function () {
+    /** @var Stack<int> $stack */
+    $stack = new Stack();
+    $stack->push(1);
+    $stack->push(2);
+    expect($stack->pop())->toBe(2);;
+});
+test('pop removes last item from stack', function () {
+    $stack = new Stack();
+    $stack->push(2);
+    $stack->push(1);
+    expect($stack->pop())->toBe(1);;
+});
+test('pop empty stack throw is empty exception', function () {
+    self::expectException(IsEmptyException::class);
+    $stack = new Stack();
+    $stack->pop();
+});
+test('can for each over stack', function () {
+    /** @var Stack<int> $stack */
+    $stack = new Stack();
+    $stack->push(1);
+    foreach ($stack as $index => $value) {
+        expect($index)->toBe(0);;
+        expect($value)->toBe(1);;
     }
-
-    public function test_counts_stacks_size(): void
-    {
-        /** @var Stack<int> $stack */
-        $stack = new Stack();
-        self::assertEquals(0, $stack->count());
-        $stack->push(1);
-        self::assertEquals(1, $stack->count());
-    }
-
-    public function test_can_pop_returns_last_value(): void
-    {
-        /** @var Stack<int> $stack */
-        $stack = new Stack();
-        $stack->push(1);
-        $stack->push(2);
-        self::assertEquals(2, $stack->pop());
-    }
-
-
-    public function test_pop_removes_last_item_from_stack(): void
-    {
-        $stack = new Stack();
-        $stack->push(2);
-        $stack->push(1);
-        self::assertEquals(1, $stack->pop());
-    }
-
-
-    public function test_pop_empty_stack_throw_is_empty_exception(): void
-    {
-        self::expectException(IsEmptyException::class);
-        $stack = new Stack();
-        $stack->pop();
-    }
-
-    public function test_can_for_each_over_stack(): void
-    {
-        /** @var Stack<int> $stack */
-        $stack = new Stack();
-        $stack->push(1);
-        foreach ($stack as $index => $value) {
-            self::assertEquals(0, $index);
-            self::assertEquals(1, $value);
-        }
-    }
-
-    public function test_iterates_in_reverse_order(): void
-    {
-        /** @var Stack<int> $stack */
-        $stack = new Stack();
-        $stack->push(1);
-        $stack->push(2);
-        $iterator = $stack->getIterator();
-        self::assertEquals(2, $iterator->current());
-        $iterator->next();
-        self::assertEquals(1, $iterator->current());
-    }
-}
+});
+test('iterates in reverse order', function () {
+    /** @var Stack<int> $stack */
+    $stack = new Stack();
+    $stack->push(1);
+    $stack->push(2);
+    $iterator = $stack->getIterator();
+    expect($iterator->current())->toBe(2);;
+    $iterator->next();
+    expect($iterator->current())->toBe(1);;
+});

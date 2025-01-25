@@ -6,6 +6,7 @@ namespace DataStructures\Set;
 use ArrayIterator;
 use Countable;
 use DataStructures\Iterator\WrappedIterator;
+use Generator;
 use IteratorAggregate;
 use LogicException;
 
@@ -98,5 +99,16 @@ class Set implements Countable, IteratorAggregate
             $set->add($item);
         }
         return $set;
+    }
+
+    /**
+     * @template TItem
+     * @param callable(): Generator<mixed, TItem> $generator
+     * @return Set<TItem>
+     */
+    public static function fromClosure(callable $generator): Set
+    {
+        $iterable = $generator();
+        return self::fromTraversable($iterable);
     }
 }
