@@ -21,7 +21,11 @@
         "pestphp/pest-plugin-drift": "^3.0"
     },
     "scripts": {
-        "test" : "pest src",
+        "test" : "pest",
+        "test:coverage" : [
+            "@putenv XDEBUG_MODE=coverage",
+            "pest --coverage"
+        ],
         "analyze" : "phpstan analyze src --level=9"
     },
     "config": {
