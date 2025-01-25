@@ -19,6 +19,7 @@ class StackedList extends Stack implements ArrayAccess
 
     public function offsetExists(mixed $offset): bool
     {
+        // @phpstan-ignore function.alreadyNarrowedType (to force exception and unexpected type)
         if (!is_int($offset)) {
             throw new InvalidArgumentException("offset can only be integer");
         }
@@ -41,9 +42,14 @@ class StackedList extends Stack implements ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         $this->assertValidOffset($offset);
-        $node = $this->findNode($offset - 1);
-        // @phpstan-ignore-next-line as above we assert next node for sure exists.
-        $node->next = $node->next->next;
+        if ($offset === 0) {
+            $this->firstNode = $this->firstNode->next;
+        } else {
+            $node = $this->findNode($offset - 1);
+            // @phpstan-ignore property.nonObject (we know for sure next node exists as we checked the offset + 1)
+            $node->next = $node->next->next;
+        }
+        // @phpstan-ignore assign.propertyType
         $this->length--;
     }
 
@@ -73,6 +79,7 @@ class StackedList extends Stack implements ArrayAccess
         /** @var Node<TValue> $lastNode */
         $lastNode = $oneToLastNode->next;
         $oneToLastNode->next = null;
+        // @phpstan-ignore assign.propertyType
         $this->length--;
         return $lastNode->value;
     }

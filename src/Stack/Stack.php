@@ -12,6 +12,9 @@ use IteratorAggregate;
  */
 class Stack implements IteratorAggregate, Countable
 {
+    /**
+     * @var int<0, max>
+     */
     protected int $length = 0;
 
     /**
