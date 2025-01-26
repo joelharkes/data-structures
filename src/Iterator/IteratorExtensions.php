@@ -180,13 +180,13 @@ trait IteratorExtensions
         return new SkipIterator($this, $count);
     }
 
-    public function take(int $count): static
+    public function take(int $count): TakeIterator
     {
         return new TakeIterator($this, $count);
     }
 
-    public function flatten($keepKeys = false): FlattenIterator
+    public function flatten($preserveKeys = false): FlattenIterator
     {
-        return new FlattenIterator($this, $keepKeys);
+        return new FlattenIterator($this, $preserveKeys);
     }
 }

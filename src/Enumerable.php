@@ -20,30 +20,30 @@ interface Enumerable extends Traversable
     public function toArray(): array;
 
     /**
-     * @template TKeyOut
-     *
-     * @param callable(TValue):TKeyOut $kefSelector
-     * @return Enumerable<TKeyOut, Enumerable<int, TValue>>
+     * @template TKeyOut of array-key
+     * @param callable(TValue, ?TKey): TKey $selector
+     * @param bool $preserveKeys
+     * @return Enumerable<TKeyOut, Enumerable<($preserveKeys is true ? TKey : int), TValue>>
      */
-    public function groupBy(callable $kefSelector): Enumerable;
+    public function groupBy(callable $selector, bool $preserveKeys = false): Enumerable;
 
     /**
      * @template TValueOut
-     * @param callable(TValue, ?TKey): TValueOut $valueMapper
+     * @param callable(TValue, ?TKey): TValueOut $selector
      * @return Enumerable<TKey, TValueOut>
      */
-    public function map(callable $valueMapper): Enumerable;
+    public function map(callable $selector): Enumerable;
 
     /**
      * @template TKeyOut
-     * @param callable(TValue, ?TKey): TKeyOut $keySelector
+     * @param callable(TValue, ?TKey): TKeyOut $selector
      * @return Enumerable<TKeyOut, TValue>
      */
-    public function keyBy(callable $keySelector): Enumerable;
+    public function mapKey(callable $selector): Enumerable;
 
     /**
-     * merges all values into one array.
-     * @return Enumerable<TKey, mixed>
+     * merges all values into one array, loses keys.
+     * @return Enumerable<int, mixed>
      */
     public function flatten(): Enumerable;
     /**
@@ -67,6 +67,12 @@ interface Enumerable extends Traversable
     public function hasKey(mixed $key): bool;
 
     /**
+     * @param TValue $value
+     * @return bool
+     */
+    public function hasValue(mixed $value): bool;
+
+    /**
      * @return bool true if the enumerable has no items.
      */
     public function isEmpty(): bool;
@@ -79,17 +85,28 @@ interface Enumerable extends Traversable
 
 
     /**
-     * @param int $count amount of items to skip
+     * @param int $offset amount of items to skip
      * @return Enumerable<TKey, TValue>
      */
-    public function skip(int $count): Enumerable;
+    public function skip(int $offset): Enumerable;
 
     /**
-     * @param int $count amount of items to take
-     * @param bool $throwIfLess if true, throws an exception if there are less items than $count
-     * @return Enumerable<TKey, TValue> with maximum $count items.
+     * @param int $length amount of items to take
+     * @param bool $preserveKeys
+     * @param bool $throwIfLess throws an exception if there are less items than $length
+     * @return Enumerable<($preserveKeys is true ? TKey : int), TValue> with maximum $length items.
      */
-    public function take(int $count, bool $throwIfLess = false):Enumerable;
+    public function take(int $length, bool $preserveKeys = true, bool $throwIfLess = false):Enumerable;
+
+    /**
+     * @param int $offset amount of items to skip
+     * @param int|null $length amount of items to take
+     * @param bool $preserveKeys if true, keys are preserved
+     * @param bool $throwIfLess if true, throws an exception if there are less items than $length in the result.
+     * @return Enumerable<($preserveKeys is true ? TKey : int), TValue> with maximum $length items.
+     */
+    public function slice(int $offset = 0, ?int $length = null, bool $preserveKeys = false, bool $throwIfLess = false): Enumerable;
+
 
     /**
      * @param callable $predicate
@@ -122,7 +139,7 @@ interface Enumerable extends Traversable
      * @param callable(TValue, ?TKey): bool $predicate
      * @return bool if at least one item matches the predicate.
      */
-    public function any(callable $predicate): bool;
+    public function has(callable $predicate): bool;
 
     /**
      * @param callable(TValue, ?TKey): bool $predicate
@@ -141,25 +158,25 @@ interface Enumerable extends Traversable
      */
     public function implode(string $glue): string;
 
+
+    // sadly the column methods are not typesafe as PHP does not support generic method calls without input parameter having the same type.
     /**
      * TValue must be of type @see \ArrayAccess
-     * @template TValueOut
      * @param string $arrayKey
-     * @return Enumerable<TKey, TValueOut>
+     * @return Enumerable<TKey, mixed>
      */
     public function mapToColumn(string $arrayKey): Enumerable;
 
     /**
-     * @template TKeyOut
      * @param string $columnName
-     * @return Enumerable<TKeyOut, TValue>
+     * @return Enumerable<array-key, TKey>
      */
     public function keyByColumn(string $columnName): Enumerable;
 
     /**
-     * @template TKeyOut
-     * @param string $keyName
-     * @return Enumerable<TKey, Enumerable<int, TValue>>
+     * @param string $columnName
+     * @param bool $preserveKeys if true, keys are preserved in the groups.
+     * @return Enumerable<array-key, Enumerable<($preserveKeys is true ? TKey : int), TValue>>
      */
-    public function groupByColumn(string $keyName): Enumerable;
+    public function groupByColumn(string $columnName, bool $preserveKeys = false): Enumerable;
 }

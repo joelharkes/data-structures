@@ -20,7 +20,7 @@ class FlattenIterator extends WrappedIterator
     /**
      * @param Iterator<TKey, Iterator<mixed, TValue>|array<array-key, TValue>> $iterator
      */
-    public function __construct(Iterator $iterator, private bool $keepKeys = false)
+    public function __construct(Iterator $iterator, private bool $preserveKeys = false)
     {
         parent::__construct($iterator);
     }
@@ -67,7 +67,7 @@ class FlattenIterator extends WrappedIterator
 
     public function key(): mixed
     {
-        if($this->keepKeys){
+        if($this->preserveKeys){
             return parent::key();
         }
         return $this->index;
