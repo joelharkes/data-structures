@@ -5,6 +5,7 @@
 namespace benchmarks;
 
 use DataStructures\Iterator\WrappedIterator;
+use DataStructures\Map\Map;
 
 class IteratorBench
 {
@@ -17,6 +18,20 @@ class IteratorBench
         $data = range(1, 1000);
         $iterator = new WrappedIterator(new \ArrayIterator($data));
         $result = $iterator->skip(5)->take(900)
+            ->filter(fn($v) => $v % 2 === 0)
+            ->map(fn($v) => $v * 2)
+            ->toArray();
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(2)
+     */
+    public function benchMap()
+    {
+        $data = range(1, 1000);
+        $map = new Map($data);
+        $result = $map->skip(5)->take(900)
             ->filter(fn($v) => $v % 2 === 0)
             ->map(fn($v) => $v * 2)
             ->toArray();

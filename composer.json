@@ -32,7 +32,8 @@
             "@putenv XDEBUG_MODE=coverage",
             "pest --coverage"
         ],
-        "analyze" : "phpstan analyze"
+        "analyze" : "phpstan analyze",
+        "benchmark" : "phpbench run ./benchmarks --report=default"
     },
     "config": {
         "allow-plugins": {
