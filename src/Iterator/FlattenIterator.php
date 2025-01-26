@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* (c) Copyright Frontify Ltd., all rights reserved. */
 
@@ -27,11 +29,11 @@ class FlattenIterator extends WrappedIterator
 
     public function current(): mixed
     {
-        if($this->subIterator){
+        if ($this->subIterator) {
             return $this->subIterator->current();
         }
         $top = parent::current();
-        if(!is_iterable($top)){
+        if (!is_iterable($top)) {
             return $top;
         }
         $this->subIterator = FlattenIterator::ensureIterator($top);
@@ -41,7 +43,7 @@ class FlattenIterator extends WrappedIterator
     public function next(): void
     {
         $this->index++;
-        if(!$this->subIterator){
+        if (!$this->subIterator) {
             parent::next();
             return;
         }
@@ -67,7 +69,7 @@ class FlattenIterator extends WrappedIterator
 
     public function key(): mixed
     {
-        if($this->preserveKeys){
+        if ($this->preserveKeys) {
             return parent::key();
         }
         return $this->index;

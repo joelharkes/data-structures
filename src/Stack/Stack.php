@@ -31,7 +31,7 @@ class Stack implements IteratorAggregate, Countable
     {
         /** @var Stack<TItem> $stack */
         $stack = new Stack();
-        foreach($param as $value){
+        foreach ($param as $value) {
             $stack->push($value);
         }
         return $stack;
@@ -66,7 +66,7 @@ class Stack implements IteratorAggregate, Countable
     /**
      * @return StackIterator<TValue>
      */
-    function getIterator(): StackIterator
+    public function getIterator(): StackIterator
     {
         return new StackIterator($this->firstNode);
     }

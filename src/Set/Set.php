@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace DataStructures\Set;
+
 use ArrayIterator;
 use Countable;
 use DataStructures\Iterator\WrappedIterator;
@@ -26,7 +27,8 @@ class Set implements Countable, IteratorAggregate
      * @param TValue $value
      * @return void
      */
-    public function add(mixed $value): void {
+    public function add(mixed $value): void
+    {
         $key = $this->getKey($value);
         $this->hasTable[$key] = $value;
     }
@@ -35,7 +37,8 @@ class Set implements Countable, IteratorAggregate
      * @param TValue $value
      * @return bool
      */
-    public function has(mixed $value): bool {
+    public function has(mixed $value): bool
+    {
         $key = $this->getKey($value);
         return array_key_exists($key, $this->hasTable);
     }
@@ -44,12 +47,14 @@ class Set implements Countable, IteratorAggregate
      * @param TValue $value
      * @return void
      */
-    public function remove(mixed $value): void {
+    public function remove(mixed $value): void
+    {
         $key = $this->getKey($value);
         unset($this->hasTable[$key]);
     }
 
-    public function clear(): void {
+    public function clear(): void
+    {
         $this->hasTable = [];
     }
 
@@ -59,13 +64,13 @@ class Set implements Countable, IteratorAggregate
      */
     private function getKey(mixed $value): int|string
     {
-        if(is_int($value) || is_string($value)){
+        if (is_int($value) || is_string($value)) {
             return $value;
         }
-        if(is_float($value)){
+        if (is_float($value)) {
             return (string) $value;
         }
-        if(!is_object($value)){
+        if (!is_object($value)) {
             $type = gettype($value);
             throw new LogicException("value of $type not supported");
         }
@@ -95,7 +100,7 @@ class Set implements Countable, IteratorAggregate
     {
         /** @var Set<TItem> $set */
         $set = new Set();
-        foreach($traversable as $item){
+        foreach ($traversable as $item) {
             $set->add($item);
         }
         return $set;

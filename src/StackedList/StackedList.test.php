@@ -1,7 +1,8 @@
 <?php
 
 declare(strict_types=1);
-use \DataStructures\StackedList\StackedList;
+use DataStructures\StackedList\StackedList;
+
 test('add at end of stack', function () {
     $list = new StackedList();
     $list->push(2);

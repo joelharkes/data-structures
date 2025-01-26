@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DataStructures\Stack;
@@ -32,7 +33,7 @@ class StackIterator implements Iterator
     /**
      * @return TValue
      */
-    function current(): mixed
+    public function current(): mixed
     {
         if ($this->node === null) {
             throw new LogicException("cannot get current when current node is not ::valid()");
@@ -40,24 +41,24 @@ class StackIterator implements Iterator
         return $this->node->value;
     }
 
-    function key(): int
+    public function key(): int
     {
         return $this->index;
     }
 
-    function next(): void
+    public function next(): void
     {
         ++$this->index;
         $this->node = $this->node?->next;
     }
 
-    function rewind(): void
+    public function rewind(): void
     {
         $this->index = 0;
         $this->node = $this->firstNode;
     }
 
-    function valid(): bool
+    public function valid(): bool
     {
         return $this->node !== null;
     }

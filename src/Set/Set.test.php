@@ -1,32 +1,33 @@
 <?php
-use \DataStructures\Set\Set;
 
-describe('a Set',function(){
+use DataStructures\Set\Set;
+
+describe('a Set', function () {
     it('can add', function () {
         $set = new DataStructures\Set\Set();
         $set->add(1);
-        expect( $set->count())->toBe(1);
+        expect($set->count())->toBe(1);
     });
 
     it('add ignores duplicates', function () {
         $set = new Set();
         $set->add(1);
         $set->add(1);
-        expect( $set->count())->toBe(1);
+        expect($set->count())->toBe(1);
     });
 
     it('remove', function () {
         $set = new Set();
         $set->add(1);
         $set->remove(1);
-        expect( $set->count())->toBe(0);
+        expect($set->count())->toBe(0);
     });
 
     it('remove ignores if not in set', function () {
         $set = new Set();
         $set->add(1);
         $set->remove(2);
-        expect( $set->count())->toBe(1);
+        expect($set->count())->toBe(1);
     });
 
     it('has', function () {

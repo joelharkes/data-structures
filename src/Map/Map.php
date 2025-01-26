@@ -13,7 +13,6 @@ use IteratorAggregate;
 use OutOfBoundsException;
 use Traversable;
 
-
 /**
  * technically only supports: int|float|string|object as values
  * float is not advisable as it is forced to an int.
@@ -92,7 +91,7 @@ class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        if($offset === null){
+        if ($offset === null) {
             // this breaks the whole map concept (push() method to auto increment the key), maybe rename the class?
             $this->array[] = $value;
             return;
@@ -125,11 +124,11 @@ class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
         return in_array($value, $this->array, $strict);
     }
 
-    public function toArray():array
+    public function toArray(): array
     {
         $result = [];
         foreach ($this->array as $key => $value) {
-            if($value instanceof Enumerable){
+            if ($value instanceof Enumerable) {
                 $result[$key] = $value->toArray();
                 continue;
             }
@@ -149,10 +148,10 @@ class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
         $result = [];
         foreach ($this->array as $key => $value) {
             $groupKey = $selector($value, $key);
-            if (!array_key_exists($groupKey , $result)) {
+            if (!array_key_exists($groupKey, $result)) {
                 $result[$groupKey] = new static();
             }
-            if($preserveKeys){
+            if ($preserveKeys) {
                 $result[$groupKey][$key] = $value;
             } else {
                 $result[$groupKey][] = $value;
@@ -198,7 +197,7 @@ class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
 
     public function first(callable $predicate = null, bool $throwIfNone = false): mixed
     {
-        $filter = $predicate ?? static fn() => true;
+        $filter = $predicate ?? static fn () => true;
         foreach ($this->array as $key => $value) {
             if ($filter($value, $key)) {
                 return $value;
@@ -249,7 +248,7 @@ class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
 
     public function skipWhile(callable $predicate, bool $throwAllSkipped = false): Enumerable
     {
-        $fn = static fn($value, $key) => !$predicate($value, $key);
+        $fn = static fn ($value, $key) => !$predicate($value, $key);
         return $this->skipUntil($fn, $throwAllSkipped);
     }
 
@@ -303,21 +302,21 @@ class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
 
     public function excludeNull(): Enumerable
     {
-        return $this->filter(fn($value) => $value !== null);
+        return $this->filter(fn ($value) => $value !== null);
     }
 
     public function mapToColumn(string $arrayKey): Enumerable
     {
-        return $this->map(fn($value) => $value[$arrayKey]);
+        return $this->map(fn ($value) => $value[$arrayKey]);
     }
 
     public function keyByColumn(string $columnName): Enumerable
     {
-        return $this->mapKey(fn($value) => $value[$columnName]);
+        return $this->mapKey(fn ($value) => $value[$columnName]);
     }
 
     public function groupByColumn(string $columnName, bool $preserveKeys = false): Enumerable
     {
-        return $this->groupBy(fn($value): mixed => $value[$columnName], $preserveKeys);
+        return $this->groupBy(fn ($value): mixed => $value[$columnName], $preserveKeys);
     }
 }

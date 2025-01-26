@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* (c) Copyright Frontify Ltd., all rights reserved. */
 
@@ -96,7 +98,7 @@ interface Enumerable extends Traversable
      * @param bool $throwIfLess throws an exception if there are less items than $length
      * @return Enumerable<($preserveKeys is true ? TKey : int), TValue> with maximum $length items.
      */
-    public function take(int $length, bool $preserveKeys = true, bool $throwIfLess = false):Enumerable;
+    public function take(int $length, bool $preserveKeys = true, bool $throwIfLess = false): Enumerable;
 
     /**
      * @param int $offset amount of items to skip

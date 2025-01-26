@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DataStructures\Iterator;
@@ -13,7 +14,6 @@ use Iterator;
  */
 class FilterIterator extends WrappedIterator
 {
-
     public function __construct(Iterator $iterator, private readonly Closure $filterFn)
     {
         parent::__construct($iterator);

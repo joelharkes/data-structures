@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DataStructures\StackedList;
@@ -16,7 +17,6 @@ use OutOfBoundsException;
  */
 class StackedList extends Stack implements ArrayAccess
 {
-
     public function offsetExists(mixed $offset): bool
     {
         // @phpstan-ignore function.alreadyNarrowedType (to force exception and unexpected type)
