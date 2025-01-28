@@ -72,7 +72,7 @@ trait IteratorExtensions
      * @return Collection<TKey, TValue>
      * @phpstan-ignore-next-line only string|int iterator keys allowed but no other way to define this.
      */
-    public function toMap(): Collection
+    public function toCollection(): Collection
     {
         /** @phpstan-ignore-next-line only string|int iterator keys allowed but no other way to define this. */
         return Collection::fromTraversable($this);

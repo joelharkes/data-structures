@@ -7,12 +7,12 @@ This folder contains the Iterator data structure. It is similar to the Collectio
 
 
 ## Example
-    
+
 ```php
 $iterator = new \DataStructures\Iterator\WrappedIterator(new ArrayIterator(['a'=>1,'b'=>2,'c'=>3]));
 $newMap = $iterator
     ->filter(fn($value, $key) => $key <= 'b')
     ->map(fn($value, $key) => $key.$value)
-    ->toMap();
+    ->toCollection();
 // new map= ['a' => 'a1', 'b' => 'b2'];
 ```

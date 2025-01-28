@@ -7,7 +7,7 @@ with a balance between as much type safety as possible and ease of use.
 * [Stack](./src/Stack)
 * [StackedList](./src/StackedList)
 * [Set](./src/Set) (HashSet)
-* [Collection](./src/Collection) (HashMap, Dictionary)
+* [Collection](./src/Collection) (php array, similar to HashMap, Dictionary)
 
 
 ## Iterator chaining

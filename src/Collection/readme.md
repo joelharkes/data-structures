@@ -37,10 +37,9 @@ all iterable functions are available as well.
 
 ```php
 $collection = new \DataStructures\Collection\Collection(['a'=>1,'b'=>2,'c'=>3]);
-$newMap = $collection->getIterator()
+$mappedAsync = $collection->getIterator()
     ->filter(fn($value, $key) => $key <= 'b')
     ->map(fn($value, $key) => $key.$value)
-    ->toMap();
-// new map= ['a' => 'a1', 'b' => 'b2'];
-$length = $newMap->count();
+    ->toCollection(); // new Collection(['a' => 'a1', 'b' => 'b2']);
+$length = $mappedAsync->count();
 ```
