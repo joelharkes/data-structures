@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DataStructures\Iterator;
 
 use Closure;
-use DataStructures\Map\Map;
+use DataStructures\Collection\Collection;
 use DataStructures\Set\Set;
 use DataStructures\Stack\Stack;
 
@@ -69,13 +69,13 @@ trait IteratorExtensions
     }
 
     /**
-     * @return Map<TKey, TValue>
+     * @return Collection<TKey, TValue>
      * @phpstan-ignore-next-line only string|int iterator keys allowed but no other way to define this.
      */
-    public function toMap(): Map
+    public function toMap(): Collection
     {
         /** @phpstan-ignore-next-line only string|int iterator keys allowed but no other way to define this. */
-        return Map::fromTraversable($this);
+        return Collection::fromTraversable($this);
     }
 
     /**

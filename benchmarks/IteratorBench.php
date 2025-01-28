@@ -5,7 +5,7 @@
 namespace benchmarks;
 
 use DataStructures\Iterator\WrappedIterator;
-use DataStructures\Map\Map;
+use DataStructures\Collection\Collection;
 
 class IteratorBench
 {
@@ -30,7 +30,7 @@ class IteratorBench
     public function benchMap()
     {
         $data = range(1, 1000);
-        $map = new Map($data);
+        $map = new Collection($data);
         $result = $map->skip(5)->take(900)
             ->filter(fn($v) => $v % 2 === 0)
             ->map(fn($v) => $v * 2)
