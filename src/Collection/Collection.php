@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DataStructures\Map;
+namespace DataStructures\Collection;
 
 use ArrayAccess;
 use ArrayIterator;
@@ -22,7 +22,7 @@ use Traversable;
  * @implements ArrayAccess<TKey, TValue>
  * @implements Enumerable<TKey, TValue>
  */
-class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
+class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerable
 {
     /**
      * @param array<TKey, TValue> $array
@@ -33,15 +33,15 @@ class Map implements Countable, IteratorAggregate, ArrayAccess, Enumerable
 
     /**
      * @param iterable<TKey, TValue> $iterator
-     * @return Map<TKey, TValue>
+     * @return Collection<TKey, TValue>
      */
-    public static function fromTraversable(iterable $iterator): Map
+    public static function fromTraversable(iterable $iterator): Collection
     {
         if (is_array($iterator)) {
-            return new Map($iterator);
+            return new Collection($iterator);
         }
         /** @var Traversable<TKey, TValue> $iterator no other options than being a traversable here. */
-        return new Map(iterator_to_array($iterator));
+        return new Collection(iterator_to_array($iterator));
     }
 
     /**

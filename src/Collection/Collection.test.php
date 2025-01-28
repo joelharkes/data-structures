@@ -1,17 +1,17 @@
 <?php
 
 declare(strict_types=1);
-use DataStructures\Map\Map;
+use DataStructures\Collection\Collection;
 
 describe('A map', function () {
     it('can be created emptily', function () {
-        $map = new Map();
+        $map = new Collection();
         expect($map)->not->toBeNull();
         expect($map->isEmpty())->toBeTrue();
     });
 
     it('can be created with array and it can be retrieved', function () {
-        $map = new Map($arr = ['test' => 1]);
+        $map = new Collection($arr = ['test' => 1]);
         expect($map->toArray())->toBe($arr);
     });
 
@@ -19,12 +19,12 @@ describe('A map', function () {
         $generator = function () {
             yield 'test' => 1;
         };
-        $map = Map::fromTraversable($generator());
+        $map = Collection::fromTraversable($generator());
         expect($map->toArray())->toBe(['test' => 1]);
     });
 
     it('can act as array', function () {
-        $map = new Map();
+        $map = new Collection();
         $map['test'] = 1;
         expect($map['test'])->toBe(1);
         $map['test'] = 2;
@@ -38,7 +38,7 @@ describe('A map', function () {
     });
 
     it('can be iterated over', function () {
-        $map = new Map($arr = ['test' => 1]);
+        $map = new Collection($arr = ['test' => 1]);
         foreach ($map as $key => $value) {
             expect($key)->toBe('test');
             expect($value)->toBe(1);
@@ -46,7 +46,7 @@ describe('A map', function () {
     });
 
     it('can check if has keys', function () {
-        $map = new Map(['test' => 1]);
+        $map = new Collection(['test' => 1]);
         expect($map->hasKey('test'))->toBeTrue();
         expect($map->offsetExists('test'))->toBeTrue();
 
@@ -54,13 +54,13 @@ describe('A map', function () {
     });
 
     it('can check if has values', function () {
-        $map = new Map(['test' => 1]);
+        $map = new Collection(['test' => 1]);
         expect($map->hasValue(1))->toBeTrue();
         expect($map->hasValue(2))->toBeFalse();
     });
 
     it('can check if has contents based on predicate', function () {
-        $map = new Map(['test' => 1, 'test2' => 2]);
+        $map = new Collection(['test' => 1, 'test2' => 2]);
         expect($map->has(fn ($value, $key) => $value === 1 && $key === 'test'))->toBeTrue();
         expect($map->has(fn ($value, $key) => $value === 4))->toBeFalse();
         expect($map->every(fn ($value, $key) => $value === 1))->toBeFalse();
@@ -68,35 +68,35 @@ describe('A map', function () {
     });
 
     it('can be filtered', function () {
-        $map = new Map(['test' => 1, 'test2' => 2]);
+        $map = new Collection(['test' => 1, 'test2' => 2]);
         $filtered = $map->filter(fn ($value, $key) => $value === 1 && $key === 'test');
         expect($filtered->toArray())->toBe(['test' => 1]);
     });
 
     it('can skip items', function () {
-        $map = new Map(['test' => 1, 'test2' => 2]);
+        $map = new Collection(['test' => 1, 'test2' => 2]);
         $skipped = $map->skip(1);
         expect($skipped->toArray())->toBe(['test2' => 2]);
         expect($map->skipWhile(fn ($value, $key) => $value === 1)->toArray())->toBe(['test2' => 2]);
         expect($map->skipUntil(fn ($value, $key) => $value === 2)->toArray())->toBe(['test2' => 2]);
     });
     it('can take items', function () {
-        $map = new Map(['test' => 1, 'test2' => 2]);
+        $map = new Collection(['test' => 1, 'test2' => 2]);
         $taken = $map->take(1);
         expect($taken->toArray())->toBe(['test' => 1]);
     });
     it('can throw on taking more then length', function () {
-        $map = new Map(['test' => 1, 'test2' => 2]);
+        $map = new Collection(['test' => 1, 'test2' => 2]);
         expect(fn () => $map->take(3, throwIfLess: true))->toThrow(OutOfBoundsException::class);
     });
 
     it('can flatten', function () {
-        $map = new Map(['test' => [1, 2], 'test2' => [3, 4]]);
+        $map = new Collection(['test' => [1, 2], 'test2' => [3, 4]]);
         expect($map->flatten()->toArray())->toBe([1, 2, 3, 4]);
     });
 
     it('can group by', function () {
-        $map = new Map([
+        $map = new Collection([
             2 => ['id' => 1, 'name' => 'test'],
             4 => ['id' => 2, 'name' => 'test2'],
             8 => ['id' => 3, 'name' => 'test'],
@@ -108,23 +108,23 @@ describe('A map', function () {
     });
 
     it('can return first match', function () {
-        $map = new Map(['test' => 1, 'test2' => 2]);
+        $map = new Collection(['test' => 1, 'test2' => 2]);
         expect($map->first())->toBe(1);
         expect($map->first(fn ($value, $key) => $key == 'test2'))->toBe(2);
     });
 
     it('can get keys', function () {
-        $map = new Map(['test' => 1, 'test2' => 2]);
+        $map = new Collection(['test' => 1, 'test2' => 2]);
         expect($map->keys())->toBeIterableResult(['test', 'test2']);
     });
 
     it('can get values', function () {
-        $map = new Map(['test' => 1, 'test2' => 4]);
+        $map = new Collection(['test' => 1, 'test2' => 4]);
         expect($map->values())->toBeIterableResult([1, 4]);
     });
 
     it('can use handy column methods', function () {
-        $map = new Map([
+        $map = new Collection([
             ['id' => 1, 'name' => 'test'],
             ['id' => 2, 'name' => 'test2'],
             ['id' => 3, 'name' => 'test'],

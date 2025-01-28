@@ -7,7 +7,7 @@ with a balance between as much type safety as possible and ease of use.
 * [Stack](./src/Stack)
 * [StackedList](./src/StackedList)
 * [Set](./src/Set) (HashSet)
-* [Map](./src/Map) (HashMap, Dictionary)
+* [Collection](./src/Collection) (HashMap, Dictionary)
 
 
 ## Iterator chaining

@@ -1,6 +1,6 @@
-# Map
+# Collection
 
-A Map provides a handy wrapper around PHP natives array which is mostly already a HashMap.
+A Collection provides a handy wrapper around PHP natives array which is mostly already an iterable HashMap but with some weird List quirks.
 
 This data structure is very useful if you need to check on uniques of data in a collection based on a certain identifier often a string or an int.
 
@@ -25,19 +25,19 @@ Naming Considerations:
 ## Example
 
 ```php
-$map = new \DataStructures\Map\Map();
-$map["a"] = 'aValue';
-$map->hasKey("a"); // true
-$map->hasKey('b'); // false
-$map->count(); // 1
-unset($map['a'])w;
+$collection = new \DataStructures\Collection\Collection();
+$collection["a"] = 'aValue';
+$collection->hasKey("a"); // true
+$collection->hasKey('b'); // false
+$collection->count(); // 1
+unset($collection['a'])w;
 ```
 
-all iterable functions are available as well:
+all iterable functions are available as well.
 
 ```php
-$map = new \DataStructures\Map\Map(['a'=>1,'b'=>2,'c'=>3]);
-$newMap = $map->getIterator()
+$collection = new \DataStructures\Collection\Collection(['a'=>1,'b'=>2,'c'=>3]);
+$newMap = $collection->getIterator()
     ->filter(fn($value, $key) => $key <= 'b')
     ->map(fn($value, $key) => $key.$value)
     ->toMap();
