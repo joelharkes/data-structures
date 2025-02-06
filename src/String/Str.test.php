@@ -42,11 +42,13 @@ describe("A String", function (){
     it('can lowercase', function () {
         $str = new Str('Hello World');
         expect($str->toLowercase()->__toString())->toBe('hello world');
+        expect((new Str('hello World'))->lowercaseFirst()->__toString())->toBe('hello World');
     });
 
     it('can uppercase', function () {
         $str = new Str('Hello World');
         expect($str->toUppercase()->__toString())->toBe('HELLO WORLD');
+        expect((new Str('hello World'))->uppercaseFirst()->__toString())->toBe('Hello World');
     });
 
     it('can trim', function () {
@@ -67,6 +69,10 @@ describe("A String", function (){
         expect($str->contains('Hello'))->toBeTrue();
         expect($str->contains('World'))->toBeTrue();
         expect($str->contains('WorldHello'))->toBeFalse();
+
+        expect($str->indexOf( ' Wo'))->toBe(5);
+        expect($str->indexOf( 'XXX'))->toBe(false);
+
     });
 
     it('can substring', function () {
@@ -79,6 +85,12 @@ describe("A String", function (){
         $str = new Str('World');
         expect($str->prepend('Hello ')->__toString())->toBe('Hello World');
         expect($str->append('!')->__toString())->toBe('World!');
+    });
+
+    it('can pad left and right', function () {
+        $str = new Str('World');
+        expect($str->padLeft(10, ' ')->__toString())->toBe('     World');
+        expect($str->padRight(10, ' ')->__toString())->toBe('World     ');
     });
 
     it('can convert to slug', function () {
