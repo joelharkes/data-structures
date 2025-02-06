@@ -10,6 +10,7 @@ use Closure;
 use Countable;
 use DataStructures\Enumerable;
 use DataStructures\Iterator\WrappedIterator;
+use DataStructures\String\Str;
 use IteratorAggregate;
 use OutOfBoundsException;
 use Traversable;
@@ -204,7 +205,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
                 return $value;
             }
         }
-        throw new OutOfBoundsException("No first element found");
+        if($throwIfNone){
+            throw new OutOfBoundsException("No first element found");
+        }
+        return null;
     }
 
     public function hasKey(mixed $key): bool
@@ -227,6 +231,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         }
         return new static($result);
     }
+
 
     public function skip(int $offset, bool $preserveKeys = true): Enumerable
     {
@@ -295,24 +300,19 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return new static(array_flip($this->array));
     }
 
-    public function implode(string $glue): string
+    public function implode(string $glue): Str
     {
-        return implode($glue, $this->array);
+        return new Str(implode($glue, $this->array));
     }
 
     /**
+     * Alias for implode() for JS lovers
      * @param string $glue
      * @return string
      */
-    public function join(string $glue): string
+    public function join(string $glue): Str
     {
         return $this->implode($glue);
-    }
-
-
-    public function excludeNull(): Enumerable
-    {
-        return $this->filter(fn ($value) => $value !== null);
     }
 
     public function mapToColumn(string $arrayKey): Enumerable
@@ -334,5 +334,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     {
         // PHP will automatically call jsonSerialize on nested components.
         return $this->array;
+    }
+
+    public function excludeNull(): Enumerable
+    {
+        return $this->filter(fn ($value) => $value !== null);
     }
 }

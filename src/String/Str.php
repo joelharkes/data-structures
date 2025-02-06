@@ -7,8 +7,10 @@ namespace DataStructures\String;
 use DataStructures\Collection\Collection;
 use JetBrains\PhpStorm\Language;
 use JetBrains\PhpStorm\Pure;
+use JsonSerializable;
+use Stringable;
 
-class Str implements \JsonSerializable
+class Str implements JsonSerializable, Stringable
 {
     public function __construct(private string $value)
     {

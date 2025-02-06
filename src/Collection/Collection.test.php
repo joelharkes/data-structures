@@ -91,8 +91,8 @@ describe('A collection', function () {
     });
 
     it('can flatten', function () {
-        $collection = new Collection(['test' => [1, 2], 'test2' => [3, 4]]);
-        expect($collection->flatten()->toArray())->toBe([1, 2, 3, 4]);
+        $collection = new Collection(['test' => [1, 2], 'test2' => [3, 4], 5]);
+        expect($collection->flatten()->toArray())->toBe([1, 2, 3, 4, 5]);
     });
 
     it('can group by', function () {
@@ -111,6 +111,8 @@ describe('A collection', function () {
         $collection = new Collection(['test' => 1, 'test2' => 2]);
         expect($collection->first())->toBe(1);
         expect($collection->first(fn ($value, $key) => $key == 'test2'))->toBe(2);
+        expect($collection->first(fn ($value, $key) => false))->toBeNull();
+        expect(fn () => $collection->first(fn ($value, $key) => false, throwIfNone: true))->toThrow(OutOfBoundsException::class);
     });
 
     it('can get keys', function () {

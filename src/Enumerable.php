@@ -8,6 +8,7 @@ namespace DataStructures;
 
 use ArrayAccess;
 use Closure;
+use Stringable;
 use Traversable;
 
 /**
@@ -156,10 +157,10 @@ interface Enumerable extends Traversable
     public function flip(): Enumerable;
 
     /**
-     * @return string
+     * @return Stringable
      * @psalm-return (TValue is string ? string : never)
      */
-    public function implode(string $glue): string;
+    public function implode(string $glue): Stringable;
 
 
     // sadly the column methods are not typesafe as PHP does not support generic method calls without input parameter having the same type.
