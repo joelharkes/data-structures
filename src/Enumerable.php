@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-/* (c) Copyright Frontify Ltd., all rights reserved. */
+
 
 namespace DataStructures;
 
 use ArrayAccess;
+use Closure;
 use Traversable;
 
 /**
@@ -31,10 +32,10 @@ interface Enumerable extends Traversable
 
     /**
      * @template TValueOut
-     * @param callable(TValue, ?TKey): TValueOut $selector
+     * @param Closure(TValue, ?TKey): TValueOut $selector
      * @return Enumerable<TKey, TValueOut>
      */
-    public function map(callable $selector): Enumerable;
+    public function map(Closure $selector): Enumerable;
 
     /**
      * @template TKeyOut

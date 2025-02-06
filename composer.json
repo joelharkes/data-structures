@@ -16,7 +16,8 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "jetbrains/phpstorm-attributes": "^1.2"
     },
     "require-dev": {
         "phpstan/phpstan": ">=2.1.2",

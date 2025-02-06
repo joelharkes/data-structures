@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/* (c) Copyright Frontify Ltd., all rights reserved. */
+
 
 namespace DataStructures\Iterator;
 

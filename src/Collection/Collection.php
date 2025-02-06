@@ -6,6 +6,7 @@ namespace DataStructures\Collection;
 
 use ArrayAccess;
 use ArrayIterator;
+use Closure;
 use Countable;
 use DataStructures\Enumerable;
 use DataStructures\Iterator\WrappedIterator;
@@ -22,7 +23,7 @@ use Traversable;
  * @implements ArrayAccess<TKey, TValue>
  * @implements Enumerable<TKey, TValue>
  */
-class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerable
+class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerable, \JsonSerializable
 {
     /**
      * @param array<TKey, TValue> $array
@@ -160,7 +161,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return new static($result);
     }
 
-    public function map(callable $selector): static
+    public function map(Closure $selector): static
     {
         $result = [];
 
@@ -299,6 +300,15 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return implode($glue, $this->array);
     }
 
+    /**
+     * @param string $glue
+     * @return string
+     */
+    public function join(string $glue): string
+    {
+        return $this->implode($glue);
+    }
+
 
     public function excludeNull(): Enumerable
     {
@@ -318,5 +328,11 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     public function groupByColumn(string $columnName, bool $preserveKeys = false): Enumerable
     {
         return $this->groupBy(fn ($value): mixed => $value[$columnName], $preserveKeys);
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        // PHP will automatically call jsonSerialize on nested components.
+        return $this->array;
     }
 }

@@ -31,6 +31,11 @@ expect()->extend('toBeIterableResult', function (array $expectedValues) {
     }
 });
 
+expect()->extend('toBeSameJson', function (mixed $expected) {
+    $this->toBeIterable();
+    expect(json_encode($this->value, JSON_THROW_ON_ERROR))->toBe(json_encode($expected, JSON_THROW_ON_ERROR));
+});
+
 /*
 |--------------------------------------------------------------------------
 | Functions
