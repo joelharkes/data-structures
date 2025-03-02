@@ -12,6 +12,7 @@ use DataStructures\Enumerable;
 use DataStructures\Iterator\WrappedIterator;
 use DataStructures\String\Str;
 use IteratorAggregate;
+use JetBrains\PhpStorm\Pure;
 use OutOfBoundsException;
 use Traversable;
 
@@ -37,6 +38,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
      * @param iterable<TKey, TValue> $iterator
      * @return Collection<TKey, TValue>
      */
+    #[Pure]
     public static function fromTraversable(iterable $iterator): Collection
     {
         if (is_array($iterator)) {
@@ -49,16 +51,18 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     /**
      * @return WrappedIterator<TKey, TValue>
      */
+    #[Pure]
     public function getIterator(): WrappedIterator
     {
         return new WrappedIterator(new ArrayIterator($this->array));
     }
 
     /**
-     * @param callable(TValue, ?TKey): bool $predicate
+     * @param Closure(TValue, ?TKey): bool $predicate
      * @return bool if at least one item matches the predicate.
      */
-    public function has(callable $predicate): bool
+    #[Pure]
+    public function has(Closure $predicate): bool
     {
         foreach ($this->array as $key => $value) {
             if ($predicate($value, $key)) {
@@ -72,6 +76,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
      * @param TKey $offset
      * @return bool
      */
+    #[Pure]
     public function offsetExists(mixed $offset): bool
     {
         return isset($this->array[$offset]);
@@ -81,6 +86,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
      * @param TKey $offset
      * @return TValue
      */
+    #[Pure]
     public function offsetGet(mixed $offset): mixed
     {
         return $this->array[$offset];
@@ -110,22 +116,24 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         unset($this->array[$offset]);
     }
 
+    #[Pure]
     public function count(): int
     {
         return count($this->array);
     }
 
     /**
-     * if value can be found in map.
-     * warning: slow operation O(n)
+     * Check array has value.
      * @param TValue $value
      * @return bool
      */
+    #[Pure]
     public function hasValue(mixed $value, bool $strict = true): bool
     {
         return in_array($value, $this->array, $strict);
     }
 
+    #[Pure]
     public function toArray(): array
     {
         $result = [];
@@ -141,11 +149,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
 
     /**
      * @template TKeyOut of array-key
-     * @param callable(TValue, ?TKey): TKey $selector
-     * @param bool $preserveKeys
-     * @return static<TKeyOut, static<($preserveKeys is true ? TKey : int), TValue>>
+     * @param Closure(TValue, ?TKey): TKeyOut $selector
+     * @return static<TKeyOut, static<TKey, TValue>>
      */
-    public function groupBy(callable $selector, bool $preserveKeys = false): static
+    public function groupBy(Closure $selector): static
     {
         $result = [];
         foreach ($this->array as $key => $value) {
@@ -153,11 +160,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
             if (!array_key_exists($groupKey, $result)) {
                 $result[$groupKey] = new static();
             }
-            if ($preserveKeys) {
                 $result[$groupKey][$key] = $value;
-            } else {
-                $result[$groupKey][] = $value;
-            }
         }
         return new static($result);
     }
@@ -172,7 +175,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return new static($result);
     }
 
-    public function mapKey(callable $selector): static
+    public function mapKey(Closure $selector): static
     {
         $result = [];
         foreach ($this->array as $key => $value) {
@@ -182,7 +185,11 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     }
 
 
-    public function flatten(): Enumerable
+    /**
+     * @return Collection<TKey, mixed>
+     */
+    #[Pure]
+    public function flatten(): Collection
     {
         $result = [];
         foreach ($this->array as $value) {
@@ -197,7 +204,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return new static($result);
     }
 
-    public function first(callable $predicate = null, bool $throwIfNone = false): mixed
+    public function first(?Closure $predicate = null, bool $throwIfNone = false): mixed
     {
         $filter = $predicate ?? static fn () => true;
         foreach ($this->array as $key => $value) {
@@ -211,17 +218,22 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return null;
     }
 
+    #[Pure]
     public function hasKey(mixed $key): bool
     {
         return array_key_exists($key, $this->array);
     }
 
+    #[Pure]
     public function isEmpty(): bool
     {
         return count($this->array) === 0;
     }
 
-    public function filter(callable $shouldKeep): Enumerable
+    /**
+     * @return Collection<TKey, TValue>
+     */
+    public function filter(Closure $shouldKeep): Collection
     {
         $result = [];
         foreach ($this->array as $key => $value) {
@@ -233,17 +245,33 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     }
 
 
-    public function skip(int $offset, bool $preserveKeys = true): Enumerable
+    /**
+     * @return Collection<TKey, TValue>
+     */
+    #[Pure]
+    public function skip(int $offset, bool $preserveKeys = true): Collection
     {
         return $this->slice($offset, null, $preserveKeys);
     }
 
-    public function take(int $length, bool $preserveKeys = true, bool $throwIfLess = false): Enumerable
+    /**
+     * @return Collection<TKey, TValue>
+     */
+    #[Pure]
+    public function take(int $length, bool $preserveKeys = true, bool $throwIfLess = false): Collection
     {
         return $this->slice(0, $length, $preserveKeys, $throwIfLess);
     }
 
-    public function slice(int $offset = 0, ?int $length = null, bool $preserveKeys = false, bool $throwIfLess = false): Enumerable
+    /**
+     * @param int $offset
+     * @param int|null $length
+     * @param bool $preserveKeys
+     * @param bool $throwIfLess
+     * @return Collection<TKey, TValue>
+     */
+    #[Pure]
+    public function slice(int $offset = 0, ?int $length = null, bool $preserveKeys = false, bool $throwIfLess = false): Collection
     {
         $result = array_slice($this->array, $offset, $length, preserve_keys: $preserveKeys);
         if ($throwIfLess && count($result) < $length) {
@@ -252,13 +280,23 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return new static($result);
     }
 
-    public function skipWhile(callable $predicate, bool $throwAllSkipped = false): Enumerable
+    /**
+     * @param Closure $predicate
+     * @param bool $throwAllSkipped
+     * @return Collection<TKey, TValue>
+     */
+    public function skipWhile(Closure $predicate, bool $throwAllSkipped = false): Collection
     {
         $fn = static fn ($value, $key) => !$predicate($value, $key);
         return $this->skipUntil($fn, $throwAllSkipped);
     }
 
-    public function skipUntil(callable $predicate, bool $throwAllSkipped = false): Enumerable
+    /**
+     * @param Closure $predicate
+     * @param bool $throwAllSkipped
+     * @return Collection<TKey, TValue>
+     */
+    public function skipUntil(Closure $predicate, bool $throwAllSkipped = false): Collection
     {
         $result = [];
         $skipped = false;
@@ -274,18 +312,26 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return new static($result);
     }
 
-    public function keys(): Enumerable
+    /**
+     * @return Collection<int, TKey>
+     */
+    #[Pure]
+    public function keys(): Collection
     {
         return new static(array_keys($this->array));
     }
 
-    public function values(): Enumerable
+    /**
+     * @return Collection<int, TValue>
+     */
+    #[Pure]
+    public function values(): Collection
     {
 
         return new static(array_values($this->array));
     }
 
-    public function every(callable $predicate): bool
+    public function every(Closure $predicate): bool
     {
         foreach ($this->array as $key => $value) {
             if (!$predicate($value, $key)) {
@@ -295,11 +341,34 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return true;
     }
 
-    public function flip(): Enumerable
+    /**
+     * @return Collection<TKey, TValue>
+     */
+    #[Pure]
+    public function flip(): Collection
     {
         return new static(array_flip($this->array));
     }
 
+    /**
+     * @return Collection<TKey, TValue>
+     */
+    #[Pure]
+    public function reverse(): Collection
+    {
+        return new static(array_reverse($this->array));
+    }
+
+    /**
+     * @return Collection<TKey, TValue>
+     */
+    #[Pure]
+    public function clone(): Collection
+    {
+        return clone $this;
+    }
+
+    #[Pure]
     public function implode(string $glue): Str
     {
         return new Str(implode($glue, $this->array));
@@ -310,32 +379,47 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
      * @param string $glue
      * @return string
      */
+    #[Pure]
     public function join(string $glue): Str
     {
         return $this->implode($glue);
     }
 
-    public function mapToColumn(string $arrayKey): Enumerable
+    /**
+     * @param string $columnName
+     * @return Collection<TKey, mixed>
+     */
+    #[Pure]
+    public function mapToColumn(string $columnName): Collection
     {
-        return $this->map(fn ($value) => $value[$arrayKey]);
+        return $this->map(static fn ($value) => $value[$columnName]);
     }
 
+    /**
+     * @param string $columnName
+     * @return Collection<array-key, TValue>
+     */
+    #[Pure]
     public function keyByColumn(string $columnName): Enumerable
     {
         return $this->mapKey(fn ($value) => $value[$columnName]);
     }
 
-    public function groupByColumn(string $columnName, bool $preserveKeys = false): Enumerable
+
+    #[Pure]
+    public function groupByColumn(string $columnName): Enumerable
     {
-        return $this->groupBy(fn ($value): mixed => $value[$columnName], $preserveKeys);
+        return $this->groupBy(fn ($value): mixed => $value[$columnName]);
     }
 
+    #[Pure]
     public function jsonSerialize(): mixed
     {
         // PHP will automatically call jsonSerialize on nested components.
         return $this->array;
     }
 
+    #[Pure]
     public function excludeNull(): Enumerable
     {
         return $this->filter(fn ($value) => $value !== null);

@@ -73,6 +73,20 @@ describe('A collection', function () {
         expect($filtered->toArray())->toBe(['test' => 1]);
     });
 
+    it('can be reversed', function () {
+        $collection = new Collection([1,4, 3]);
+        expect($collection->reverse()->toArray())->toBe([3,4,1]);
+    });
+
+    it('can be cloned', function () {
+        $collection = new Collection([1,4]);
+        $clone = $collection->clone();
+        $collection[] = 2;
+        $clone[] = 4;
+        expect($collection->toArray())->toBe([1,4,2]);
+        expect($clone->toArray())->toBe([1,4,4]);
+    });
+
     it('can skip items', function () {
         $collection = new Collection(['test' => 1, 'test2' => 2]);
         $skipped = $collection->skip(1);
@@ -101,7 +115,7 @@ describe('A collection', function () {
             4 => ['id' => 2, 'name' => 'test2'],
             8 => ['id' => 3, 'name' => 'test'],
         ]);
-        expect($collection->groupBy(fn ($value) => $value['name'], preserveKeys: true)->toArray())->toBe([
+        expect($collection->groupBy(fn ($value) => $value['name'])->toArray())->toBe([
             'test' => [2 => ['id' => 1, 'name' => 'test'], 8 => ['id' => 3, 'name' => 'test']],
             'test2' => [ 4 => ['id' => 2, 'name' => 'test2']]
         ]);
@@ -134,7 +148,12 @@ describe('A collection', function () {
         expect($collection->mapToColumn('id')->toArray())->toBe([1, 2, 3]);
         expect($collection->mapToColumn('name')->toArray())->toBe(['test', 'test2', 'test']);
         expect($collection->keyByColumn('id')->toArray())->toBe([1 => ['id' => 1, 'name' => 'test'], 2 => ['id' => 2, 'name' => 'test2'], 3 => ['id' => 3, 'name' => 'test']]);
-        expect($collection->groupByColumn('name')->toArray())->toBe(['test' => [['id' => 1, 'name' => 'test'], ['id' => 3, 'name' => 'test']], 'test2' => [['id' => 2, 'name' => 'test2']]]);
+        expect($collection->groupByColumn('name')->toArray())->toBe(['test' => [
+            0 => ['id' => 1, 'name' => 'test'],
+            2 => ['id' => 3, 'name' => 'test']
+        ], 'test2' => [
+            1=> ['id' => 2, 'name' => 'test2']
+        ]]);
     });
 
 });
