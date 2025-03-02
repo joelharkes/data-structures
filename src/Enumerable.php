@@ -26,6 +26,12 @@ interface Enumerable extends Traversable
     public function toArray(): array;
 
     /**
+     * @return array<TKey, mixed>
+     */
+    #[Pure]
+    public function toArrayRecurse(): array;
+
+    /**
      * @template TKeyOut of array-key
      * @param Closure(TValue, ?TKey): TKeyOut $selector
      * @return Enumerable<TKeyOut, Enumerable<TKey, TValue>> preserves keys in groups.

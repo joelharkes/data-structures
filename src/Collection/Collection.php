@@ -136,10 +136,16 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     #[Pure]
     public function toArray(): array
     {
+       return $this->array;
+    }
+
+    #[Pure]
+    public function toArrayRecurse(): array
+    {
         $result = [];
         foreach ($this->array as $key => $value) {
             if ($value instanceof Enumerable) {
-                $result[$key] = $value->toArray();
+                $result[$key] = $value->toArrayRecurse();
                 continue;
             }
             $result[$key] = $value;
@@ -175,6 +181,11 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return new static($result);
     }
 
+    /**
+     * @template TKeyOut
+     * @param Closure(TValue, ?TKey): TKeyOut $selector
+     * @return static<TKeyOut, TValue>
+     */
     public function mapKey(Closure $selector): static
     {
         $result = [];
@@ -397,17 +408,21 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
 
     /**
      * @param string $columnName
-     * @return Collection<array-key, TValue>
+     * @return static<array-key, TValue>
      */
     #[Pure]
-    public function keyByColumn(string $columnName): Enumerable
+    public function keyByColumn(string $columnName): static
     {
         return $this->mapKey(fn ($value) => $value[$columnName]);
     }
 
 
+    /**
+     * @param string $columnName
+     * @return static<array-key, static<TKey, TValue>
+     */
     #[Pure]
-    public function groupByColumn(string $columnName): Enumerable
+    public function groupByColumn(string $columnName): static
     {
         return $this->groupBy(fn ($value): mixed => $value[$columnName]);
     }
@@ -420,7 +435,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     }
 
     #[Pure]
-    public function excludeNull(): Enumerable
+    public function excludeNull(): static
     {
         return $this->filter(fn ($value) => $value !== null);
     }
