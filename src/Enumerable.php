@@ -187,6 +187,7 @@ interface Enumerable extends Traversable
     public function every(Closure $predicate): bool;
 
     /**
+     * Flips array keys<->values. !Only works if the values are int or string!
      * @return Enumerable<TValue, TKey> with the keys and values swapped.
      */
     #[Pure]
@@ -220,7 +221,7 @@ interface Enumerable extends Traversable
     public function mapToColumn(string $columnName): Enumerable;
 
     /**
-     * @param string $columnName
+     * @param string $columnName name of the column to use as key, should be {@see array-key} type!
      * @return Enumerable<array-key, TValue>
      */
     #[Pure]
@@ -228,7 +229,7 @@ interface Enumerable extends Traversable
     public function keyByColumn(string $columnName): Enumerable;
 
     /**
-     * @param string $columnName
+     * @param string $columnName name of the column to use as key, should be {@see array-key} type!
      * @return Enumerable<array-key, Enumerable<TKey, TValue>>
      */
     #[Pure]

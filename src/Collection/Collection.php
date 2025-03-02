@@ -111,8 +111,8 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
+        // @phpstan-ignore identical.alwaysFalse (PHP allows null as offset, than it should handle as a push)
         if ($offset === null) {
-            // this breaks the whole map concept (push() method to auto increment the key), maybe rename the class?
             $this->array[] = $value;
             return;
         }
@@ -376,11 +376,12 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     }
 
     /**
-     * @return Collection<TKey, TValue>
+     * @return Collection<TValue, TKey>
      */
     #[Pure]
     public function flip(): Collection
     {
+        // @phpstan-ignore argument.type,argument.templateType (We expect end user to understand they can only flip int|string values)
         return static::make(array_flip($this->array));
     }
 
@@ -411,10 +412,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     /**
      * Alias for implode() for JS lovers
      * @param string $glue
-     * @return string
+     * @return Str
      */
     #[Pure]
-    public function join(string $glue): Str
+    public function join(string|Stringable $glue): Str
     {
         return $this->implode($glue);
     }
@@ -426,6 +427,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     #[Pure]
     public function mapToColumn(string $columnName): Collection
     {
+        // @phpstan-ignore offsetAccess.nonOffsetAccessible (we expect end user to make sure column name exists)
         return $this->map(static fn ($value) => $value[$columnName]);
     }
 
@@ -436,17 +438,19 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     #[Pure]
     public function keyByColumn(string $columnName): Collection
     {
+        // @phpstan-ignore argument.type,argument.templateType,offsetAccess.nonOffsetAccessible (we expect end user to make sure column name exists and has an array-key type)
         return $this->mapKey(fn ($value) => $value[$columnName]);
     }
 
 
     /**
      * @param string $columnName
-     * @return Collection<array-key, Collection<TKey, TValue>
+     * @return Collection<array-key, Collection<TKey, TValue>>
      */
     #[Pure]
     public function groupByColumn(string $columnName): Collection
     {
+        // @phpstan-ignore argument.type,argument.templateType,offsetAccess.nonOffsetAccessible (we expect end user to make sure column name exists and has an array-key type)
         return $this->groupBy(fn ($value): mixed => $value[$columnName]);
     }
 
@@ -457,12 +461,19 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return $this->array;
     }
 
+    /**
+     * @return Collection<TKey, TValue> without null values, sadly cannot be typed.
+     */
     #[Pure]
     public function excludeNullValues(): Collection
     {
         return $this->filter(fn ($value) => $value !== null);
     }
 
+    /**
+     * @param iterable<TKey, TValue> $items
+     * @return Collection<TKey, TValue>
+     */
     #[Pure]
     public function merge(iterable $items): Collection
     {
