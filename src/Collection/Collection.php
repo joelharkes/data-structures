@@ -14,6 +14,7 @@ use DataStructures\String\Str;
 use IteratorAggregate;
 use JetBrains\PhpStorm\Pure;
 use OutOfBoundsException;
+use Stringable;
 use Traversable;
 
 /**
@@ -30,8 +31,19 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     /**
      * @param array<TKey, TValue> $array
      */
-    final public function __construct(protected array $array = [])
+    public function __construct(protected array $array = [])
     {
+    }
+
+    /**
+     * @template TKeyOut of array-key
+     * @template TValueOut
+     * @param array<TKeyOut,TValueOut> $array
+     * @return Collection<TKeyOut, TValueOut>
+     */
+    protected static function make(array $array = []): Collection
+    {
+        return new Collection($array);
     }
 
     /**
@@ -42,10 +54,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     public static function fromTraversable(iterable $iterator): Collection
     {
         if (is_array($iterator)) {
-            return new Collection($iterator);
+            return static::make($iterator);
         }
         /** @var Traversable<TKey, TValue> $iterator no other options than being a traversable here. */
-        return new Collection(iterator_to_array($iterator));
+        return static::make(iterator_to_array($iterator));
     }
 
     /**
@@ -165,43 +177,50 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     /**
      * @template TKeyOut of array-key
      * @param Closure(TValue, ?TKey): TKeyOut $selector
-     * @return static<TKeyOut, static<TKey, TValue>>
+     * @return Collection<TKeyOut, Collection<TKey, TValue>>
      */
-    public function groupBy(Closure $selector): static
+    public function groupBy(Closure $selector): Collection
     {
-        $result = [];
+        /** @var Collection<TKeyOut, Collection<TKey, TValue>> $result */
+        $result = static::make();
         foreach ($this->array as $key => $value) {
+            /** @var TKeyOut $groupKey */
             $groupKey = $selector($value, $key);
-            if (!array_key_exists($groupKey, $result)) {
-                $result[$groupKey] = new static();
+            if (!$result->hasKey($groupKey)) {
+                $result[$groupKey] = static::make();
             }
-                $result[$groupKey][$key] = $value;
+            $result[$groupKey][$key] = $value;
         }
-        return new static($result);
+        return $result;
     }
 
-    public function map(Closure $selector): static
+    /**
+     * @template TValueOut
+     * @param Closure(TValue, ?TKey): TValueOut $selector
+     * @return Collection<TKey, TValueOut>
+     */
+    public function map(Closure $selector): Collection
     {
         $result = [];
 
         foreach ($this->array as $key => $value) {
             $result[$key] = $selector($value, $key);
         }
-        return new static($result);
+        return static::make($result);
     }
 
     /**
-     * @template TKeyOut
+     * @template TKeyOut of array-key
      * @param Closure(TValue, ?TKey): TKeyOut $selector
      * @return static<TKeyOut, TValue>
      */
-    public function mapKey(Closure $selector): static
+    public function mapKey(Closure $selector): Collection
     {
         $result = [];
         foreach ($this->array as $key => $value) {
             $result[$selector($value, $key)] = $value;
         }
-        return new static($result);
+        return static::make($result);
     }
 
 
@@ -221,7 +240,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
                 $result[] = $subValue;
             }
         }
-        return new static($result);
+        return static::make($result);
     }
 
     public function first(?Closure $predicate = null, bool $throwIfNone = false): mixed
@@ -255,13 +274,8 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
      */
     public function filter(Closure $shouldKeep): Collection
     {
-        $result = [];
-        foreach ($this->array as $key => $value) {
-            if ($shouldKeep($value, $key)) {
-                $result[$key] = $value;
-            }
-        }
-        return new static($result);
+        $result = array_filter($this->array, $shouldKeep, ARRAY_FILTER_USE_BOTH);
+        return static::make($result);
     }
 
 
@@ -297,7 +311,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         if ($throwIfLess && count($result) < $length) {
             throw new OutOfBoundsException("Not enough items to slice");
         }
-        return new static($result);
+        return static::make($result);
     }
 
     /**
@@ -329,7 +343,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         if ($throwAllSkipped && !$skipped) {
             throw new OutOfBoundsException("All items were skipped");
         }
-        return new static($result);
+        return static::make($result);
     }
 
     /**
@@ -338,7 +352,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     #[Pure]
     public function keys(): Collection
     {
-        return new static(array_keys($this->array));
+        return static::make(array_keys($this->array));
     }
 
     /**
@@ -348,7 +362,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     public function values(): Collection
     {
 
-        return new static(array_values($this->array));
+        return static::make(array_values($this->array));
     }
 
     public function every(Closure $predicate): bool
@@ -367,7 +381,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     #[Pure]
     public function flip(): Collection
     {
-        return new static(array_flip($this->array));
+        return static::make(array_flip($this->array));
     }
 
     /**
@@ -376,7 +390,7 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     #[Pure]
     public function reverse(): Collection
     {
-        return new static(array_reverse($this->array));
+        return static::make(array_reverse($this->array));
     }
 
     /**
@@ -389,9 +403,9 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     }
 
     #[Pure]
-    public function implode(string $glue): Str
+    public function implode(string|Stringable $glue): Str
     {
-        return new Str(implode($glue, $this->array));
+        return new Str(implode((string)$glue, $this->array));
     }
 
     /**
@@ -417,10 +431,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
 
     /**
      * @param string $columnName
-     * @return static<array-key, TValue>
+     * @return Collection<array-key, TValue>
      */
     #[Pure]
-    public function keyByColumn(string $columnName): static
+    public function keyByColumn(string $columnName): Collection
     {
         return $this->mapKey(fn ($value) => $value[$columnName]);
     }
@@ -428,10 +442,10 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
 
     /**
      * @param string $columnName
-     * @return static<array-key, static<TKey, TValue>
+     * @return Collection<array-key, Collection<TKey, TValue>
      */
     #[Pure]
-    public function groupByColumn(string $columnName): static
+    public function groupByColumn(string $columnName): Collection
     {
         return $this->groupBy(fn ($value): mixed => $value[$columnName]);
     }
@@ -444,14 +458,14 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     }
 
     #[Pure]
-    public function excludeNullValues(): static
+    public function excludeNullValues(): Collection
     {
         return $this->filter(fn ($value) => $value !== null);
     }
 
     #[Pure]
-    public function merge(iterable $items): static
+    public function merge(iterable $items): Collection
     {
-        return new static([...$this->array, ...$items]);
+        return static::make([...$this->array, ...$items]);
     }
 }

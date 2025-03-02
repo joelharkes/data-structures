@@ -8,6 +8,7 @@ namespace DataStructures;
 
 use ArrayAccess;
 use Closure;
+use DataStructures\String\Str;
 use JetBrains\PhpStorm\Pure;
 use Stringable;
 use Traversable;
@@ -46,7 +47,7 @@ interface Enumerable extends Traversable
     public function map(Closure $selector): Enumerable;
 
     /**
-     * @template TKeyOut
+     * @template TKeyOut of array-key
      * @param Closure(TValue, ?TKey): TKeyOut $selector
      * @return Enumerable<TKeyOut, TValue>
      */
@@ -193,7 +194,7 @@ interface Enumerable extends Traversable
 
     /**
      * Reverses the order of items in the array.
-     * @return Enumerable<TKey, TValue>.
+     * @return Enumerable<TKey, TValue>
      */
     #[Pure]
     public function reverse(): Enumerable;
@@ -204,15 +205,12 @@ interface Enumerable extends Traversable
     #[Pure]
     public function clone(): Enumerable;
 
-    /**
-     * @return Stringable
-     * @psalm-return (TValue is string ? string : never)
-     */
     #[Pure]
-    public function implode(string $glue): Stringable;
+    public function implode(string|Stringable $glue): Str;
 
 
-    // sadly the column methods are not typesafe as PHP does not support generic method calls without input parameter having the same type.
+    // sadly the column methods are not typesafe as PHP does not support generic method calls,
+    // where the Generic type is not in one of the input parameters.
     /**
      * TValue must be of type @param string $columnName
      * @return Enumerable<TKey, mixed>

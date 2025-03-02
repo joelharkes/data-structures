@@ -43,7 +43,7 @@ class StackedList extends Stack implements ArrayAccess
     {
         $this->assertValidOffset($offset);
         if ($offset === 0) {
-            $this->firstNode = $this->firstNode->next;
+            $this->firstNode = $this->firstNode?->next;
         } else {
             $node = $this->findNode($offset - 1);
             // @phpstan-ignore property.nonObject (we know for sure next node exists as we checked the offset + 1)

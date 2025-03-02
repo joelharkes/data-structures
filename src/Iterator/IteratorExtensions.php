@@ -8,6 +8,7 @@ use Closure;
 use DataStructures\Collection\Collection;
 use DataStructures\Set\Set;
 use DataStructures\Stack\Stack;
+use Stringable;
 
 /**
  * @template TKey
@@ -124,7 +125,8 @@ trait IteratorExtensions
                 $result .= $glue;
             }
             $isFirst = false;
-            $result .= (string)$value;
+            // @phpstan-ignore assignOp.invalid (we expect PHP will just fail and throw exception for us)
+            $result .= $value;
         }
         return $result;
     }
@@ -180,12 +182,20 @@ trait IteratorExtensions
         return new SkipIterator($this, $count);
     }
 
+    /**
+     * @param int $count
+     * @return TakeIterator<TKey, TValue>
+     */
     public function take(int $count): TakeIterator
     {
         return new TakeIterator($this, $count);
     }
 
-    public function flatten($preserveKeys = false): FlattenIterator
+    /**
+     * @param bool $preserveKeys
+     * @return FlattenIterator<array-key, mixed>
+     */
+    public function flatten(bool $preserveKeys = false): FlattenIterator
     {
         return new FlattenIterator($this, $preserveKeys);
     }

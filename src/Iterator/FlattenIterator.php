@@ -24,6 +24,7 @@ class FlattenIterator extends WrappedIterator
      */
     public function __construct(Iterator $iterator, private bool $preserveKeys = false)
     {
+        // @phpstan-ignore argument.type (have to do some type waring, to give a typed result)
         parent::__construct($iterator);
     }
 
@@ -36,7 +37,7 @@ class FlattenIterator extends WrappedIterator
         if (!is_iterable($top)) {
             return $top;
         }
-        $this->subIterator = FlattenIterator::ensureIterator($top);
+        $this->subIterator = self::ensureIterator($top);
         return $this->subIterator->current();
     }
 
@@ -75,7 +76,7 @@ class FlattenIterator extends WrappedIterator
         return $this->index;
     }
 
-    private static function ensureIterator(Iterator|array $value): Iterator
+    private static function ensureIterator(mixed $value): Iterator
     {
         if ($value instanceof Iterator) {
             return $value;
@@ -85,6 +86,6 @@ class FlattenIterator extends WrappedIterator
             return new \ArrayIterator($value);
         }
 
-        throw new InvalidArgumentException('Value must be an array or an \Iterator.');
+        throw new \InvalidArgumentException('Value must be an array or an \Iterator.');
     }
 }

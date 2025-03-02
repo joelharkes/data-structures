@@ -8,12 +8,18 @@ use DataStructures\Collection\Collection;
 use JetBrains\PhpStorm\Language;
 use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
+use LogicException;
 use Stringable;
 
 class Str implements JsonSerializable, Stringable
 {
     public function __construct(private string $value)
     {
+    }
+
+    public static function from(string|Stringable $value): Str
+    {
+        return new self((string)$value);
     }
 
     #[Pure]
@@ -45,97 +51,107 @@ class Str implements JsonSerializable, Stringable
      */
 
     #[Pure]
-    public function split(string $separator): Collection
+    public function split(string|Stringable $separator): Collection
     {
         // mimic javascript to split by character when empty separator.
-        $values = $separator === '' ? mb_str_split($this->value, 1) : explode($separator, $this->value);
+        $sep = (string)$separator;
+        $values = $sep === '' ? mb_str_split($this->value, 1) : explode($sep, $this->value);
 
         return $this->newCollection($values)->map(fn($v) => $this->make($v));
     }
 
     #[Pure]
-    public function replace(string $find, string $replace): Str
+    public function replace(string|Stringable $find, string|Stringable $replace): Str
     {
-        return $this->make(str_replace($find, $replace, $this->value));
-    }
-
-    #[Pure]
-    public function regReplace(#[Language("RegExp")]string $regex, string $replacement): static
-    {
-        return $this->make(preg_replace($regex, $replacement, $this->value));
-    }
-
-    #[Pure]
-    public function isMatch(#[Language("RegExp")] string $regex): bool
-    {
-        return preg_match($regex, $this->value) === 1;
+        return $this->make(str_replace((string)$find, (string) $replace, $this->value));
     }
 
     /**
-     * @param string $regex
-     * @return Collection
+     * @param string|Stringable $regex
+     * @param string|Stringable $replacement
+     * @return Str
+     * @throws LogicException if preg_replace fails, see: https://www.php.net/manual/en/function.preg-last-error.php
      */
     #[Pure]
-    public function matches(#[Language("RegExp")] string $regex): Collection
+    public function regReplace(#[Language("RegExp")]string|Stringable $regex, string|Stringable $replacement): Str
+    {
+        return $this->make(
+            preg_replace((string)$regex, (string)$replacement, $this->value)
+            ?? throw new LogicException('preg_replace failed: ' . preg_last_error_msg())
+        ) ;
+    }
+
+    #[Pure]
+    public function isMatch(#[Language("RegExp")] string|Stringable $regex): bool
+    {
+        return preg_match((string)$regex, $this->value) === 1;
+    }
+
+    /**
+     * @param string|Stringable $regex
+     * @return Collection<int, string>
+     */
+    #[Pure]
+    public function matches(#[Language("RegExp")] string|Stringable $regex): Collection
     {
         $matches = [];
-        preg_match($regex, $this->value, $matches);
+        preg_match((string)$regex, $this->value, $matches);
 
         return $this->newCollection($matches);
     }
 
     #[Pure]
-    public function trim(string $characters = " \n\r\t\v\0"): Str
+    public function trim(string|Stringable $characters = " \n\r\t\v\0"): Str
     {
-        return $this->make(trim($this->value, $characters));
+        return $this->make(trim($this->value, (string)$characters));
     }
 
     #[Pure]
-    public function trimLeft(string $characters = " \n\r\t\v\0"): Str
+    public function trimLeft(string|Stringable $characters = " \n\r\t\v\0"): Str
     {
-        return $this->make(ltrim($this->value, $characters));
+        return $this->make(ltrim($this->value, (string)$characters));
     }
 
     #[Pure]
-    public function trimRight(string $characters = " \n\r\t\v\0"): Str
+    public function trimRight(string|Stringable $characters = " \n\r\t\v\0"): Str
     {
-        return $this->make(rtrim($this->value, $characters));
+        return $this->make(rtrim($this->value, (string)$characters));
     }
 
     #[Pure]
-    public function prepend(string $prepend): Str
+    public function prepend(string|Stringable $prepend): Str
     {
         return $this->make($prepend . $this->value);
     }
 
     #[Pure]
-    public function append(string $append): Str
+    public function append(string|Stringable $append): Str
     {
         return $this->make($this->value . $append);
     }
 
     #[Pure]
-    public function substring(int $start = 0, int $length = null): Str
+    public function substring(int $start = 0, ?int $length = null): Str
     {
         return $this->make(substr($this->value, $start, $length));
     }
 
     #[Pure]
-    public function contains(string $needle): bool
+    public function contains(string|Stringable $needle): bool
     {
-        return str_contains($this->value, $needle) !== false;
+        return str_contains($this->value, (string)$needle) !== false;
     }
 
     #[Pure]
-    public function startsWith(string $needle): bool
+    public function startsWith(string|Stringable $needle): bool
     {
-        return str_starts_with($this->value, $needle);
+        return str_starts_with($this->value, (string)$needle);
     }
 
     #[Pure]
-    public function endsWith(string $needle): bool
+    public function endsWith(string|Stringable $needle): bool
     {
-        return str_ends_with($this->value, $needle);
+        return str_ends_with($this->value, (string) $needle);
     }
 
     #[Pure]
@@ -163,21 +179,21 @@ class Str implements JsonSerializable, Stringable
     }
 
     #[Pure]
-    public function indexOf(Str|string $needle): int|false
+    public function indexOf(Stringable|string $needle): int|false
     {
         return strpos($this->value, (string)$needle);
     }
 
     #[Pure]
-    public function padLeft(int $expectedLength, string $char = ' '): Str
+    public function padLeft(int $expectedLength, string|Stringable $char = ' '): Str
     {
-        return $this->make(str_pad($this->value, $expectedLength, $char,STR_PAD_LEFT));
+        return $this->make(str_pad($this->value, $expectedLength, (string)$char,STR_PAD_LEFT));
     }
 
     #[Pure]
-    public function padRight(int $expectedLength,string $char = ' '): Str
+    public function padRight(int $expectedLength,string|Stringable $char = ' '): Str
     {
-        return $this->make(str_pad($this->value, $expectedLength, $char,STR_PAD_RIGHT));
+        return $this->make(str_pad($this->value, $expectedLength, (string)$char,STR_PAD_RIGHT));
     }
 
     #[Pure]
@@ -204,9 +220,14 @@ class Str implements JsonSerializable, Stringable
         // uppercase add dash in front except for the first character
         $value = $this->value;
         if($upperToSlugLowercase){
-            $value = preg_replace_callback('/[A-Z]/', fn($match) => $slugChar . strtolower($match[0]), $this->value);
+            $value = preg_replace_callback('/[A-Z]/', fn($match) => $slugChar . strtolower($match[0]), $this->value)
+                ?? throw new LogicException("Regex replace failed: ". preg_last_error_msg());
         }
-        $value = trim(preg_replace($replacementRegex, $slugChar, $value), $slugChar);
+        $value = trim(
+            preg_replace($replacementRegex, $slugChar, $value)
+                ?? throw new LogicException("Regex replace failed: ". preg_last_error_msg()),
+            $slugChar
+        );
 
         return $this->make($value);
     }
