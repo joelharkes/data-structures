@@ -187,6 +187,12 @@ class Str implements JsonSerializable, Stringable
     }
 
     #[Pure]
+    public function value(): string
+    {
+        return $this->value;
+    }
+
+    #[Pure]
     public function jsonSerialize(): string
     {
         return $this->value;

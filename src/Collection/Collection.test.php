@@ -109,13 +109,29 @@ describe('A collection', function () {
         expect($collection->flatten()->toArray())->toBe([1, 2, 3, 4, 5]);
     });
 
+    it('can flip', function () {
+        $collection = new Collection(['test' => 1, 'test2' => 2]);
+        expect($collection->flip()->toArray())->toBe([1 => 'test', 2 => 'test2']);
+    });
+
+    it('can join', function () {
+        $collection = new Collection(['hello', 'world']);
+        expect($collection->join(' ')->value())->toBe('hello world');
+    });
+
+    it('can reduce', function () {
+        $collection = new Collection([1, 2, 3]);
+        expect($collection->reduce(fn($a, $b) => $a + $b, 0))->toBe(6);
+    });
+
+
     it('can group by', function () {
         $collection = new Collection([
             2 => ['id' => 1, 'name' => 'test'],
             4 => ['id' => 2, 'name' => 'test2'],
             8 => ['id' => 3, 'name' => 'test'],
         ]);
-        expect($collection->groupBy(fn ($value) => $value['name'])->toArray())->toBe([
+        expect($collection->groupBy(fn ($value) => $value['name'])->toArrayRecurse())->toBe([
             'test' => [2 => ['id' => 1, 'name' => 'test'], 8 => ['id' => 3, 'name' => 'test']],
             'test2' => [ 4 => ['id' => 2, 'name' => 'test2']]
         ]);
@@ -148,12 +164,35 @@ describe('A collection', function () {
         expect($collection->mapToColumn('id')->toArray())->toBe([1, 2, 3]);
         expect($collection->mapToColumn('name')->toArray())->toBe(['test', 'test2', 'test']);
         expect($collection->keyByColumn('id')->toArray())->toBe([1 => ['id' => 1, 'name' => 'test'], 2 => ['id' => 2, 'name' => 'test2'], 3 => ['id' => 3, 'name' => 'test']]);
-        expect($collection->groupByColumn('name')->toArray())->toBe(['test' => [
+        expect($collection->groupByColumn('name')->toArrayRecurse())->toBe(['test' => [
             0 => ['id' => 1, 'name' => 'test'],
             2 => ['id' => 3, 'name' => 'test']
         ], 'test2' => [
             1=> ['id' => 2, 'name' => 'test2']
         ]]);
+    });
+
+    it('can json serialize', function () {
+        $collection = new Collection(['test' => 1, 'test2' => new Collection([1,2])]);
+        expect(json_encode($collection))->toBe('{"test":1,"test2":[1,2]}');
+    });
+
+    it('can exclude null values', function () {
+        $collection = new Collection(['test' => 1, 'test2' => null]);
+        expect($collection->excludeNullValues()->toArray())->toBe(['test' => 1]);
+    });
+
+
+    it('can merge different iterables', function () {
+        $collection = new Collection(['test' => 1, 'test2' => 2]);
+        $collection2 = new Collection(['test3' => 3, 'test4' => 4]);
+        expect($collection->merge($collection2)->toArray())->toBe(['test' => 1, 'test2' => 2, 'test3' => 3, 'test4' => 4]);
+        expect($collection->merge(['test2' => 3])->toArray())->toBe(['test' => 1, 'test2' => 3]);
+        $generator = function () {
+            yield 'test' => 5;
+            yield 'test4' => 2;
+        };
+        expect($collection->merge($generator())->toArray())->toBe(['test' => 5, 'test2' => 2, 'test4' => 2]);
     });
 
 });

@@ -122,6 +122,15 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
         return count($this->array);
     }
 
+    public function reduce(Closure $reducer, mixed $initialValue): mixed
+    {
+        $result = $initialValue;
+        foreach($this->array as $key => $value){
+            $result = $reducer($result, $value, $key);
+        }
+        return $result;
+    }
+
     /**
      * Check array has value.
      * @param TValue $value
@@ -435,8 +444,14 @@ class Collection implements Countable, IteratorAggregate, ArrayAccess, Enumerabl
     }
 
     #[Pure]
-    public function excludeNull(): static
+    public function excludeNullValues(): static
     {
         return $this->filter(fn ($value) => $value !== null);
+    }
+
+    #[Pure]
+    public function merge(iterable $items): static
+    {
+        return new static([...$this->array, ...$items]);
     }
 }

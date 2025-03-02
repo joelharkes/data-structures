@@ -63,7 +63,15 @@ interface Enumerable extends Traversable
      * @return Enumerable<TKey, TValue>
      */
     #[Pure]
-    public function excludeNull(): Enumerable;
+    public function excludeNullValues(): Enumerable;
+
+    /**
+     * @param iterable<TKey, TValue> $items
+     * @return Enumerable<TKey, TValue>
+     */
+    #[Pure]
+    public function merge(iterable $items): Enumerable;
+
 
     /**
      * @param null|Closure(TValue, ?TKey): bool $predicate
@@ -156,6 +164,14 @@ interface Enumerable extends Traversable
      */
     #[Pure]
     public function count(): int;
+
+    /**
+     * @template TReduced
+     * @param Closure(TReduced, TValue, ?TKey): TReduced $reducer
+     * @param TReduced $initialValue
+     * @return TReduced
+     */
+    public function reduce(Closure $reducer, mixed $initialValue): mixed;
 
     /**
      * @param Closure(TValue, ?TKey): bool $predicate
